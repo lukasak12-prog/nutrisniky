@@ -9,8 +9,8 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 export default defineConfig({
   tanstackStart: {
     server: { 
-      entry: "src/server.ts", // Přidali jsme src/
-      preset: "cloudflare-pages" // Přidali jsme explicitní preset
+      entry: "src/server.ts",
+      preset: "cloudflare-pages",
     },
   },
 });
