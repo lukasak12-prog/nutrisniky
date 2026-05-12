@@ -1,14 +1,5 @@
 {
+  "configPath": "../../../wrangler.toml",
   "name": "nutrisniky",
-  "type": "javascript",
-  "pages_build_output_dir": "dist/client",
-  "env": {},
-  "workers_dev": true,
-  "routes": [],
-  "triggers": {
-    "crons": []
-  },
-  "observability": {
-    "enabled": false
-  }
+  "pages_build_output_dir": "dist/client"
 }
