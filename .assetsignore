@@ -1,0 +1,4 @@
+wrangler.json
+wrangler.toml
+.dev.vars
+.env
