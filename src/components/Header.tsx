@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { Phone, Menu, X, Brain } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -29,12 +28,12 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
   return (
     <header className={base}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-5">
-        <Link to="/" className={`flex items-center gap-2 ${textColor}`}>
+        <a href="/" className={`flex items-center gap-2 ${textColor}`}>
           <Brain className="h-7 w-7" strokeWidth={1.5} />
           <span className="text-xs font-semibold uppercase tracking-[0.2em]">
             NUTRISNIKY
           </span>
-        </Link>
+        </a>
 
         <nav className={`hidden items-center gap-8 lg:flex ${textColor}`}>
           <a href="#hero" className="text-sm transition-opacity hover:opacity-70">Domů</a>
