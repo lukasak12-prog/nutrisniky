@@ -1,11 +1,13 @@
 import { Layout } from "@/components/Layout";
 import heroImg from "@/assets/nikca web.png";
-import portrait from "@/assets/Nikča web.jpg";
+import portrait from "@/assets/portrait-optimized.jpg";
+import avatar from "@/assets/avatar.jpg";
 import {
   MapPin, Sparkles, CalendarDays, Ruler, Pizza,
   HandHeart, ClipboardList, Salad, Check,
   GraduationCap, Award, Heart, Phone, Mail,
-  Clock, MessageSquare, UtensilsCrossed, TrendingUp,
+  Clock, MessageSquare, UtensilsCrossed, TrendingUp, Download,
+  Scale, Leaf, Dumbbell, Activity, ChevronDown,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
@@ -66,11 +68,6 @@ const services = [
   },
 ];
 
-const posts = [
-  { title: "Proč diety nefungují (a co dělat místo nich)", excerpt: "Restriktivní diety vedou k jojo efektu. Vysvětlím proč a co dělat jinak.", date: "5. 4. 2026" },
-  { title: "Emoční jídlo: jak ho rozpoznat", excerpt: "Často jíme z jiných důvodů než hladu. Jak si toho všimnout a co s tím.", date: "22. 3. 2026" },
-  { title: "Bílkoviny v praxi: kolik a odkud", excerpt: "Praktický přehled, kolik bílkovin opravdu potřebujete a kde je najít.", date: "10. 3. 2026" },
-];
 
 const pricing = [
   { title: "Vstupní konzultace", price: "1000 Kč", duration: "60 minut" },
@@ -89,6 +86,73 @@ const contactSchema = z.object({
   message: z.string().trim().max(1000).optional(),
 });
 
+function ServiceCard({ service, idx }: { service: (typeof services)[0]; idx: number }) {
+  const [manualOpen, setManualOpen] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const isOpen = manualOpen || hovered;
+  const Icon = service.icon;
+  return (
+    <div
+      className="reveal-on-scroll"
+      style={{ "--reveal-delay": `${Math.min(idx * 90, 270)}ms` } as React.CSSProperties}
+    >
+    <div
+      className={`cursor-pointer rounded-3xl border bg-card/90 shadow-[0_14px_45px_-32px_rgba(77,58,41,0.4)] transition-all duration-300 ${isOpen ? "border-turquoise/40 shadow-[0_24px_60px_-28px_rgba(77,58,41,0.5)]" : "border-border/80"}`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onClick={() => setManualOpen((p) => !p)}
+    >
+      {/* Compact header — always visible */}
+      <div className="flex items-center gap-5 p-6">
+        <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl transition-all duration-300 ${isOpen ? "bg-turquoise/25 text-turquoise" : "bg-turquoise/12 text-turquoise"}`}>
+          <Icon className="h-7 w-7" strokeWidth={1.6} />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="mb-0.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-turquoise">Služba {idx + 1}</p>
+          <h3 className={`text-lg font-bold leading-snug tracking-tight transition-colors duration-300 ${isOpen ? "text-turquoise" : "text-foreground"}`}>{service.title}</h3>
+        </div>
+        <ChevronDown className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-400 ${isOpen ? "rotate-180 text-turquoise" : ""}`} />
+      </div>
+
+      {/* Expandable body */}
+      <div className={`grid transition-all duration-500 ease-out ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
+        <div className="overflow-hidden">
+          <div className="border-t border-border/60 px-6 pb-7 pt-5">
+            {service.duration && (
+              <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-turquoise/15 px-4 py-1.5 text-sm font-semibold text-turquoise">
+                <Clock className="h-3.5 w-3.5" /> {service.duration}
+              </p>
+            )}
+            {service.description && (
+              <p className="mb-4 text-sm leading-7 text-muted-foreground">{service.description}</p>
+            )}
+            {service.items && service.items.length > 0 && (
+              <ul className="mb-6 grid gap-2">
+                {service.items.map((item) => (
+                  <li key={item} className="flex items-start gap-3 rounded-xl border border-border/60 bg-background/70 px-4 py-2.5 text-sm">
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-turquoise/20 text-turquoise">
+                      <Check className="h-3 w-3" />
+                    </span>
+                    <span className="leading-6 text-foreground">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <a
+              href="#kontakt"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-turquoise to-turquoise/80 px-6 py-2.5 text-sm font-semibold text-turquoise-foreground shadow-md shadow-turquoise/20 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+            >
+              Mám zájem
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  );
+}
+
 function HomePage() {
   useRevealOnScroll();
 
@@ -101,7 +165,7 @@ function HomePage() {
           alt="Nutriční terapeutka v moderní kuchyni"
           width={1920}
           height={1080}
-          className="absolute inset-0 h-full w-full object-cover object-[70%_18%]"
+          className="absolute inset-0 h-full w-full object-cover object-[70%_18%] animate-hero-reveal"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/35 to-transparent" />
         <div className="relative z-10 mx-auto flex min-h-[88vh] max-w-screen-2xl items-center px-4 pt-32 pb-20">
@@ -130,13 +194,13 @@ function HomePage() {
             </div>
 
             {/* Description with enhanced styling */}
-            <div className="relative mb-8 rounded-2xl bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md border border-white/20 p-8 shadow-xl animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-              <div className="absolute top-4 right-4 w-20 h-20 bg-turquoise/10 rounded-full blur-xl"></div>
-              <p className="relative max-w-xl text-lg font-normal leading-8 text-white/95">
-                <span className="font-semibold text-turquoise">Kromě toho, co jíst,</span> poradím i <span className="text-white">jak na zdravý vztah k jídlu a disciplínu.</span>
+            <div className="relative mb-8 max-w-3xl overflow-hidden rounded-[2rem] border border-white/25 bg-black/35 p-6 shadow-2xl shadow-black/20 backdrop-blur-xl animate-fade-in-up sm:p-8" style={{ animationDelay: '0.6s' }}>
+              <div className="absolute inset-0 bg-gradient-to-br from-white/12 via-white/6 to-transparent"></div>
+              <p className="relative max-w-2xl text-base font-medium leading-8 text-white sm:text-lg">
+                <span className="font-semibold text-turquoise">Kromě toho, co jíst,</span> poradím i jak na zdravý vztah k jídlu a disciplínu.
               </p>
-              <p className="relative mt-4 max-w-xl text-lg font-normal leading-8 text-white/90">
-                <span className="text-turquoise font-semibold">Společně najdeme cestu,</span> která vám <span className="font-semibold italic">vydrží.</span>
+              <p className="relative mt-4 max-w-2xl text-base font-medium leading-8 text-white sm:text-lg">
+                <span className="font-semibold text-turquoise">Společně najdeme cestu,</span> která vám vydrží.
               </p>
             </div>
 
@@ -167,21 +231,75 @@ function HomePage() {
         </p>
       </div>
 
-      {/* benefits */}
+      {/* S CIM VAM MOHU POMOCI */}
       <section className="relative overflow-hidden bg-secondary py-28 md:py-32">
-        <div className="absolute left-1/2 top-10 h-72 w-72 -translate-x-1/2 rounded-full bg-turquoise/10 blur-3xl" />
+        <div className="absolute left-1/2 top-10 h-96 w-96 -translate-x-1/2 rounded-full bg-turquoise/8 blur-3xl" />
         <div className="mx-auto max-w-screen-2xl px-4">
-          <h2 className="reveal-on-scroll mx-auto max-w-3xl text-center text-3xl font-medium leading-tight md:text-4xl mb-4">
-            Aby změna vydržela, musí vám vyhovovat. Zaměřuji se na to, abyste…
-          </h2>
-          <div className="reveal-on-scroll mx-auto max-w-3xl text-center mb-16" style={{ "--reveal-delay": "120ms" } as React.CSSProperties}>
-            <p className="text-base text-muted-foreground">Společné řešení pro všechny vaše potřeby</p>
+          <div className="reveal-on-scroll mx-auto max-w-2xl text-center mb-16">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-turquoise">Oblasti péče</p>
+            <h2 className="text-4xl font-medium leading-tight md:text-5xl">S čím vám mohu pomoci?</h2>
+            <p className="mt-5 text-muted-foreground">Specializuji se na výživu při různých životních situacích a zdravotních stavech.</p>
           </div>
-          <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <Benefit icon={<Sparkles className="h-10 w-10" />} title="…nejen vypadali dobře, ale i se dobře cítili" text="Najdeme způsob stravování, který dá vašemu tělu co potřebuje, abyste měli energii a cítili se skvěle." />
-            <Benefit icon={<CalendarDays className="h-10 w-10" />} title="…rady dokázali začlenit i do hektického režimu" text='Dím vám návod, „jak jíst zdravě pro smrtelníky", kterí mají práci, rodinu a svůj život.' />
-            <Benefit icon={<Ruler className="h-10 w-10" />} title="…si váhu udrželi až do konce života" text="Kromě jídla budeme pracovat i na vašem vztahu k jídlu a návycích. Získáte nad jídlem přirozenou kontrolu." />
-            <Benefit icon={<Pizza className="h-10 w-10" />} title="…mohli jíst i jídla, která mají rádi a přesto hubli" text="Naučím vás základy zdravého stravování, abyste získali svobodu. Bez drastických omezení." />
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                icon: Scale,
+                title: "Hubnutí a přibírání na váze",
+                text: "Sestavím individuální plán pro dosažení zdravé váhy, který bude dlouhodobě udržitelný.",
+                accent: "from-turquoise/30 to-turquoise/5",
+                iconColor: "text-turquoise",
+                iconBg: "bg-turquoise/15",
+              },
+              {
+                icon: Leaf,
+                title: "Stravování při dietních omezeních",
+                text: "Bezlaktózová, bezlepková nebo jiná specifická dieta — chutná a vyvážená řešení.",
+                accent: "from-emerald-500/20 to-emerald-500/5",
+                iconColor: "text-emerald-600",
+                iconBg: "bg-emerald-500/15",
+              },
+              {
+                icon: Dumbbell,
+                title: "Zdravý životní styl",
+                text: "Výživa přizpůsobená vašemu tempu života — pro více energie, pohody a vitality každý den.",
+                accent: "from-brown/20 to-brown/5",
+                iconColor: "text-brown",
+                iconBg: "bg-brown/15",
+              },
+              {
+                icon: Activity,
+                title: "Stravování při diabetu a dalších onemocněních",
+                text: "Odborná výživová podpora při metabolických onemocněních a dalších zdravotních stavech.",
+                accent: "from-sky-500/20 to-sky-500/5",
+                iconColor: "text-sky-600",
+                iconBg: "bg-sky-500/15",
+              },
+            ].map((item, idx) => {
+              const Icon = item.icon;
+              return (
+                <div
+                  key={item.title}
+                  className="reveal-on-scroll group flex flex-col overflow-hidden rounded-3xl border border-border/80 bg-card/90 shadow-[0_14px_45px_-32px_rgba(77,58,41,0.4)] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_28px_60px_-28px_rgba(77,58,41,0.5)]"
+                  style={{ "--reveal-delay": `${idx * 110}ms` } as React.CSSProperties}
+                >
+                  {/* Visual area */}
+                  <div className={`relative flex h-52 items-center justify-center bg-gradient-to-br ${item.accent} overflow-hidden`}>
+                    <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'radial-gradient(circle at 70% 30%, rgba(255,255,255,0.4) 0%, transparent 60%)' }} />
+                    <div className={`relative flex h-20 w-20 items-center justify-center rounded-2xl ${item.iconBg} shadow-sm transition-transform duration-500 group-hover:scale-110`}>
+                      <Icon className={`h-10 w-10 ${item.iconColor}`} strokeWidth={1.5} />
+                    </div>
+                  </div>
+                  {/* Content */}
+                  <div className="flex flex-1 flex-col p-7">
+                    <h3 className="text-lg font-bold leading-snug tracking-tight text-foreground transition-colors duration-300 group-hover:text-turquoise">{item.title}</h3>
+                    <p className="mt-3 flex-1 text-sm leading-7 text-muted-foreground">{item.text}</p>
+                    <a href="#kontakt" className={`mt-6 inline-flex items-center text-sm font-semibold ${item.iconColor} hover:underline underline-offset-4`}>
+                      Více informací →
+                    </a>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -195,72 +313,10 @@ function HomePage() {
             <p className="mt-5 text-muted-foreground">Vyberte si podporu podle toho, kde se na své cestě právě nacházíte.</p>
           </div>
 
-          <div className="space-y-6">
-            {services.map((s, idx) => {
-              const Icon = s.icon;
-              return (
-                <div
-                  key={s.title}
-                  className="reveal-on-scroll service-card group relative flex flex-col gap-8 overflow-hidden rounded-3xl border border-border/80 bg-card/90 p-8 shadow-[0_18px_60px_-35px_rgba(77,58,41,0.45)] backdrop-blur md:flex-row md:p-10"
-                  style={{ "--reveal-delay": `${Math.min(idx * 90, 360)}ms` } as React.CSSProperties}
-                >
-                  {/* Icon Background */}
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-turquoise/5 rounded-full blur-3xl group-hover:bg-turquoise/10 transition-colors duration-500"></div>
-
-                  {/* Icon Container */}
-                  <div className="relative flex-shrink-0 flex items-start justify-center w-full md:w-24 h-24">
-                    <div className="absolute inset-0 bg-gradient-to-br from-turquoise/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div className="relative flex items-center justify-center w-20 h-20 rounded-2xl bg-turquoise/15 group-hover:bg-turquoise/25 transition-all duration-500">
-                      {Icon && <Icon className="w-10 h-10 text-turquoise group-hover:scale-110 transition-transform duration-500" />}
-                    </div>
-                  </div>
-
-                  {/* Content */}
-                  <div className="relative flex-1">
-                    <div className="flex flex-col gap-3 border-b border-border/70 pb-6 sm:flex-row sm:items-start sm:justify-between">
-                      <div>
-                        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] text-turquoise">Služba {idx + 1}</p>
-                        <h3 className="text-2xl font-bold leading-tight tracking-[-0.025em] text-foreground transition-colors duration-300 group-hover:text-turquoise md:text-3xl">{s.title}</h3>
-                      </div>
-                      <span className="inline-flex w-fit rounded-full bg-background/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground shadow-sm">
-                        Nutriční péče
-                      </span>
-                    </div>
-                    
-                    {s.duration && (
-                      <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-turquoise/15 px-4 py-2 text-sm font-semibold text-turquoise">
-                        <Clock className="h-4 w-4" />
-                        {s.duration}
-                      </p>
-                    )}
-
-                    {s.description && (
-                      <p className="mt-5 max-w-3xl text-base leading-8 text-muted-foreground">{s.description}</p>
-                    )}
-
-                    {s.items && s.items.length > 0 && (
-                      <ul className="mt-6 grid gap-3">
-                        {s.items.map((item) => (
-                          <li key={item} className="flex items-start gap-3 rounded-2xl border border-border/60 bg-background/70 px-4 py-3 text-sm text-foreground shadow-sm">
-                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-turquoise/20 text-turquoise">
-                              <Check className="h-3.5 w-3.5" />
-                            </span>
-                            <span className="leading-6">{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-
-                    <a
-                      href="#kontakt"
-                      className="mt-8 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-turquoise to-turquoise/80 px-7 py-3 text-sm font-semibold text-turquoise-foreground shadow-lg shadow-turquoise/20 transition-all duration-300 hover:scale-105 hover:shadow-xl"
-                    >
-                      Mám zájem
-                    </a>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="grid gap-5 md:grid-cols-2">
+            {services.map((s, idx) => (
+              <ServiceCard key={s.title} service={s} idx={idx} />
+            ))}
           </div>
         </div>
       </section>
@@ -336,11 +392,51 @@ function HomePage() {
         </div>
       </section>
 
+      {/* ZAZNAM STRAVY */}
+      <section className="bg-background py-20 md:py-24">
+        <div className="mx-auto max-w-screen-2xl px-4">
+          <div className="reveal-on-scroll mx-auto max-w-3xl rounded-3xl border border-border/80 bg-card/90 p-8 shadow-[0_18px_60px_-38px_rgba(77,58,41,0.45)] md:p-10">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-turquoise/15 text-turquoise">
+                <UtensilsCrossed className="h-5 w-5" />
+              </div>
+              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Záznam stravy</h2>
+            </div>
+
+            <div className="space-y-4 text-base leading-8 text-muted-foreground">
+              <p>
+                Před každou konzultací je třeba si vést 3 denní záznam stravy, který mi zašlete na{" "}
+                <span className="font-semibold text-foreground">můj e-mail</span> nejpozději tři dny před konzultací.
+              </p>
+              <p>
+                Záznam stravy zahrnuje zapisování všeho, co jste během dne jedli a pili po dobu 3 dnů
+                (2 pracovních a 1 víkendového). Pro inspiraci vám je k dispozici vzorový jídelníček.
+                Je potřeba si zaznamenávat opravdu vše. To znamená přesně specifikovat, o jakou potravinu,
+                pokrm nebo nápoj se jedná — uvádět značku, druh potraviny/pokrmu/nápoje, a přibližné
+                množství, které jste zkonzumovali. Například gramáže jídel, objem vypitých nápojů v
+                litrech nebo v mililitrech.
+              </p>
+            </div>
+
+            <div className="mt-8">
+              <a
+                href="/zaznam_stravy.docx"
+                download
+                className="inline-flex items-center gap-2.5 rounded-full border border-turquoise/40 bg-turquoise/10 px-6 py-3 text-sm font-semibold text-turquoise shadow-sm transition hover:bg-turquoise/20 hover:shadow-md"
+              >
+                <Download className="h-4 w-4" />
+                Stáhnout záznam stravy (.docx)
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* expert help */}
       <section className="bg-gradient-to-b from-secondary to-background py-28 md:py-32">
         <div className="mx-auto max-w-screen-2xl px-4">
           <h2 className="reveal-on-scroll mx-auto max-w-3xl text-center text-3xl font-medium leading-tight md:text-4xl">
-            Zdravé stravování nemusí být tak těžké, když vím nějaký podá pomocnou ruku!
+            Zdravé stravování nemusí být tak těžké, když vám někdo podá pomocnou ruku!
           </h2>
           <div className="mt-16 grid gap-12 md:grid-cols-3">
             <Benefit icon={<HandHeart className="h-10 w-10" />} title="Odborná pomoc" text='Budu tu pro vás, pokud bude váha stagnovat nebo něco nepůjde podle vašich představ. Pomůžu Vám zůstat "on track" i při neočekávaných událostech.' />
@@ -367,37 +463,16 @@ function HomePage() {
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-turquoise">O mně</p>
             <h2 className="text-4xl font-medium leading-tight md:text-5xl">Ráda Vám pomohu na vaší cestě</h2>
             <p className="mt-6 leading-relaxed text-muted-foreground">
-              Jmenuji se Adéla a jsem nutriční terapeutka. Vím, že zdravé stravování není o zákazech a přísných dietách, ale o porozumění vlastnímu tělu a hlavě.
+              Jmenuji se Nicola a jsem nutriční terapeutka. Vím, že zdravé stravování není o zákazech a přísných dietách, ale o porozumění vlastnímu tělu a hlavě.
             </p>
             <p className="mt-4 leading-relaxed text-muted-foreground">
-              Při své práci kombinuji odborné znalosti z nutriční terapie s psychologickým přístupem. Pomohu vám najít cestu, která vám vydrží – bez výčitek a jojo efektu.
+              Při své práci kombinuji odborné znalosti z nutriční terapie s psychologickým přístupem. Pomohu vám najít cestu, která vám vydrží bez výčitek a jojo efektu.
             </p>
             <div className="mt-10 grid gap-8 sm:grid-cols-3">
-              <AboutItem icon={<GraduationCap className="h-7 w-7" />} title="Vzdělání" text="Vysokoškolsky vzdělané nutriční terapeutka." />
+              <AboutItem icon={<GraduationCap className="h-7 w-7" />} title="Vzdělání" text="Vysokoškolsky vzdělaná nutriční terapeutka." />
               <AboutItem icon={<Award className="h-7 w-7" />} title="Praxe" text="Stovky spokojených klientů." />
               <AboutItem icon={<Heart className="h-7 w-7" />} title="Přístup" text="Empatický a individuální." />
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* BLOG */}
-      <section id="blog" className="bg-secondary py-28 md:py-32">
-        <div className="mx-auto max-w-screen-2xl px-4">
-          <div className="reveal-on-scroll mx-auto max-w-2xl text-center">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-turquoise">Blog</p>
-            <h2 className="text-4xl font-medium leading-tight md:text-5xl">Inspirace a tipy</h2>
-            <p className="mt-5 text-muted-foreground">Krátké články o výživě, psychologii jídla a praktických návycích.</p>
-          </div>
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
-            {posts.map((p, idx) => (
-              <article key={p.title} className="reveal-on-scroll flex flex-col rounded-3xl border border-border/80 bg-card/90 p-8 shadow-[0_14px_45px_-32px_rgba(77,58,41,0.5)] transition hover:-translate-y-1 hover:border-turquoise/40 hover:shadow-[0_24px_60px_-35px_rgba(77,58,41,0.55)]" style={{ "--reveal-delay": `${idx * 100}ms` } as React.CSSProperties}>
-                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{p.date}</p>
-                <h3 className="mt-3 text-xl font-medium leading-snug">{p.title}</h3>
-                <p className="mt-4 flex-1 text-sm text-muted-foreground">{p.excerpt}</p>
-                <a href="#kontakt" className="mt-6 text-sm font-medium text-brown underline-offset-4 hover:underline">Číst článek →</a>
-              </article>
-            ))}
           </div>
         </div>
       </section>
@@ -409,7 +484,7 @@ function HomePage() {
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-turquoise">Kontakt</p>
             <h2 className="text-4xl font-medium leading-tight md:text-5xl">Napište mi zprávu</h2>
             <p className="mt-5 text-muted-foreground">
-              Ráda vím pomohu s vašimi obtížemi, nebo odpovím na jakýkoliv dotaz. Vždy se snažím odpovědět <strong>do 24 hodin</strong>.
+              Ráda vám pomohu s vašimi obtížemi, nebo odpovím na jakýkoliv dotaz. Vždy se snažím odpovědět <strong>do 24 hodin</strong>.
             </p>
           </div>
 
@@ -417,7 +492,7 @@ function HomePage() {
             <div className="reveal-on-scroll space-y-6">
               <div className="space-y-5 rounded-3xl border border-border/80 bg-card/90 p-8 shadow-[0_18px_60px_-38px_rgba(77,58,41,0.45)]">
                 <div className="flex items-start gap-4">
-                  <img src={portrait} alt="Nicola Zounková" width={96} height={96} className="h-20 w-20 shrink-0 rounded-full object-cover shadow-md" />
+                  <img src={avatar} alt="Nicola Zounková" width={96} height={96} className="h-20 w-20 shrink-0 rounded-full object-cover shadow-md" />
                   <div>
                     <p className="font-semibold">Nicola Zounková</p>
                     <p className="text-sm text-muted-foreground">Nutriční terapeutka</p>
