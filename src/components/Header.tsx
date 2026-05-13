@@ -21,27 +21,29 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
 
   const isTransparent = transparent && !scrolled;
   const base = isTransparent
-    ? "fixed inset-x-0 top-0 z-30 bg-transparent"
-    : "fixed inset-x-0 top-0 z-30 bg-background/90 backdrop-blur border-b border-border";
+    ? "fixed inset-x-0 top-0 z-30 bg-transparent transition-all duration-300"
+    : "fixed inset-x-0 top-0 z-30 border-b border-border/70 bg-background/85 shadow-[0_18px_45px_-35px_rgba(77,58,41,0.45)] backdrop-blur-xl transition-all duration-300";
   const textColor = isTransparent ? "text-white" : "text-foreground";
 
   return (
     <header className={base}>
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-5">
-        <a href="/" className={`flex items-center gap-2 ${textColor}`}>
-          <Brain className="h-7 w-7" strokeWidth={1.5} />
-          <span className="text-xs font-semibold uppercase tracking-[0.2em]">
+      <div className="mx-auto flex max-w-screen-2xl items-center justify-between gap-4 px-4 py-4">
+        <a href="/" className={`group flex items-center gap-3 rounded-full ${isTransparent ? "bg-white/10" : "bg-card/80"} px-3 py-2 shadow-sm backdrop-blur transition hover:-translate-y-0.5 ${textColor}`}>
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-turquoise/90 text-turquoise-foreground shadow-sm">
+            <Brain className="h-5 w-5" strokeWidth={1.8} />
+          </span>
+          <span className="text-xs font-bold uppercase tracking-[0.22em]">
             NUTRISNIKY
           </span>
         </a>
 
         <nav className={`hidden items-center gap-8 lg:flex ${textColor}`}>
-          <a href="#hero" className="text-sm transition-opacity hover:opacity-70">Domů</a>
+          <a href="#hero" className="text-sm font-medium transition hover:text-turquoise">Domů</a>
           {nav.map((item) => (
             <a
               key={item.href}
               href={item.href}
-              className="text-sm transition-opacity hover:opacity-70"
+              className="text-sm font-medium transition hover:text-turquoise"
             >
               {item.label}
             </a>
@@ -54,7 +56,7 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
           </a>
           <a
             href="#kontakt"
-            className="rounded-full bg-turquoise px-5 py-2.5 text-sm font-medium text-turquoise-foreground shadow-sm transition hover:opacity-90"
+            className="rounded-full bg-turquoise px-5 py-2.5 text-sm font-semibold text-turquoise-foreground shadow-lg shadow-turquoise/20 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-turquoise/25"
           >
             Napište mi zprávu
           </a>
@@ -70,15 +72,15 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
       </div>
 
       {open && (
-        <div className="border-t border-border bg-background lg:hidden">
-          <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-5 text-foreground">
-            <a href="#hero" onClick={() => setOpen(false)} className="py-1 text-sm">Domů</a>
+        <div className="border-t border-border/70 bg-background/95 shadow-xl backdrop-blur-xl lg:hidden">
+          <div className="mx-auto flex max-w-screen-2xl flex-col gap-3 px-4 py-5 text-foreground">
+            <a href="#hero" onClick={() => setOpen(false)} className="rounded-xl px-3 py-2 text-sm font-medium hover:bg-turquoise/10">Domů</a>
             {nav.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="py-1 text-sm"
+                className="rounded-xl px-3 py-2 text-sm font-medium hover:bg-turquoise/10"
               >
                 {item.label}
               </a>
