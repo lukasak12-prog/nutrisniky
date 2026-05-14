@@ -1,7 +1,7 @@
 import { Layout } from "@/components/Layout";
 import heroImg from "@/assets/nikca web.png";
 import portrait from "@/assets/portrait-optimized.jpg";
-import avatar from "@/assets/avatar.jpg";
+import avatar from "@/assets/avatar2.jpg";
 import {
   MapPin, Sparkles, CalendarDays, Ruler, Pizza,
   HandHeart, ClipboardList, Salad, Check,
@@ -86,69 +86,100 @@ const contactSchema = z.object({
   message: z.string().trim().max(1000).optional(),
 });
 
-function ServiceCard({ service, idx }: { service: (typeof services)[0]; idx: number }) {
-  const [manualOpen, setManualOpen] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const isOpen = manualOpen || hovered;
-  const Icon = service.icon;
+function ServicesSection() {
+  const [activeIdx, setActiveIdx] = useState<number | null>(null);
+  const active = activeIdx !== null ? services[activeIdx] : null;
+  const ActiveIcon = active?.icon ?? null;
+
   return (
     <div
-      className="reveal-on-scroll"
-      style={{ "--reveal-delay": `${Math.min(idx * 90, 270)}ms` } as React.CSSProperties}
+      className="grid items-start gap-6 lg:grid-cols-[1fr_380px]"
+      onMouseLeave={() => setActiveIdx(null)}
     >
-    <div
-      className={`cursor-pointer rounded-3xl border bg-card/90 shadow-[0_14px_45px_-32px_rgba(77,58,41,0.4)] transition-all duration-300 ${isOpen ? "border-turquoise/40 shadow-[0_24px_60px_-28px_rgba(77,58,41,0.5)]" : "border-border/80"}`}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onClick={() => setManualOpen((p) => !p)}
-    >
-      {/* Compact header — always visible */}
-      <div className="flex items-center gap-5 p-6">
-        <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl transition-all duration-300 ${isOpen ? "bg-turquoise/25 text-turquoise" : "bg-turquoise/12 text-turquoise"}`}>
-          <Icon className="h-7 w-7" strokeWidth={1.6} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="mb-0.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-turquoise">Služba {idx + 1}</p>
-          <h3 className={`text-lg font-bold leading-snug tracking-tight transition-colors duration-300 ${isOpen ? "text-turquoise" : "text-foreground"}`}>{service.title}</h3>
-        </div>
-        <ChevronDown className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-400 ${isOpen ? "rotate-180 text-turquoise" : ""}`} />
+      {/* Karta grid — nikdy se nehne */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        {services.map((s, idx) => {
+          const Icon = s.icon;
+          const isActive = activeIdx === idx;
+          return (
+            <div
+              key={s.title}
+              className="reveal-on-scroll"
+              style={{ "--reveal-delay": `${Math.min(idx * 80, 240)}ms` } as React.CSSProperties}
+            >
+              <div
+                className={`cursor-pointer rounded-3xl border bg-card/90 shadow-[0_14px_45px_-32px_rgba(77,58,41,0.4)] transition-all duration-300 ${
+                  isActive
+                    ? "border-turquoise/50 shadow-[0_18px_50px_-24px_rgba(77,58,41,0.5)]"
+                    : "border-border/80 hover:border-turquoise/20"
+                }`}
+                onMouseEnter={() => setActiveIdx(idx)}
+                onClick={() => setActiveIdx((p) => (p === idx ? null : idx))}
+              >
+                <div className="flex items-center gap-4 p-5">
+                  <div className={`flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl transition-all duration-300 ${isActive ? "bg-turquoise/25" : "bg-turquoise/12"}`}>
+                    <Icon className="h-6 w-6 text-turquoise" strokeWidth={1.6} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="mb-0.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-turquoise">Služba {idx + 1}</p>
+                    <h3 className={`text-base font-bold leading-snug tracking-tight transition-colors duration-300 ${isActive ? "text-turquoise" : "text-foreground"}`}>{s.title}</h3>
+                  </div>
+                  <ChevronDown className={`h-4 w-4 shrink-0 transition-all duration-300 ${isActive ? "rotate-180 text-turquoise" : "text-muted-foreground"}`} />
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Expandable body */}
-      <div className={`grid transition-all duration-500 ease-out ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
-        <div className="overflow-hidden">
-          <div className="border-t border-border/60 px-6 pb-7 pt-5">
-            {service.duration && (
-              <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-turquoise/15 px-4 py-1.5 text-sm font-semibold text-turquoise">
-                <Clock className="h-3.5 w-3.5" /> {service.duration}
-              </p>
-            )}
-            {service.description && (
-              <p className="mb-4 text-sm leading-7 text-muted-foreground">{service.description}</p>
-            )}
-            {service.items && service.items.length > 0 && (
-              <ul className="mb-6 grid gap-2">
-                {service.items.map((item) => (
-                  <li key={item} className="flex items-start gap-3 rounded-xl border border-border/60 bg-background/70 px-4 py-2.5 text-sm">
-                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-turquoise/20 text-turquoise">
-                      <Check className="h-3 w-3" />
-                    </span>
-                    <span className="leading-6 text-foreground">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <a
-              href="#kontakt"
-              onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-turquoise to-turquoise/80 px-6 py-2.5 text-sm font-semibold text-turquoise-foreground shadow-md shadow-turquoise/20 transition-all duration-300 hover:scale-105 hover:shadow-lg"
-            >
-              Mám zájem
-            </a>
-          </div>
+      {/* Detail panel — sticky, vpravo na desktopu */}
+      <div className="lg:sticky lg:top-28">
+        <div className={`min-h-[220px] rounded-3xl border bg-card/90 shadow-[0_18px_60px_-38px_rgba(77,58,41,0.45)] transition-all duration-300 ${active ? "border-turquoise/40" : "border-border/80"}` }>
+          {active && ActiveIcon ? (
+            <div className="p-7">
+              <div className="mb-5 flex items-center gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-turquoise/20 text-turquoise">
+                  <ActiveIcon className="h-6 w-6" strokeWidth={1.6} />
+                </div>
+                <h3 className="text-xl font-bold text-foreground">{active.title}</h3>
+              </div>
+              {active.duration && (
+                <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-turquoise/15 px-4 py-1.5 text-sm font-semibold text-turquoise">
+                  <Clock className="h-3.5 w-3.5" /> {active.duration}
+                </p>
+              )}
+              {active.description && (
+                <p className="mb-4 text-sm leading-7 text-muted-foreground">{active.description}</p>
+              )}
+              {active.items && active.items.length > 0 && (
+                <ul className="mb-6 grid gap-2">
+                  {active.items.map((item) => (
+                    <li key={item} className="flex items-start gap-3 rounded-xl border border-border/60 bg-background/70 px-4 py-2.5 text-sm">
+                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-turquoise/20 text-turquoise">
+                        <Check className="h-3 w-3" />
+                      </span>
+                      <span className="leading-6 text-foreground">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <a
+                href="#kontakt"
+                className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-turquoise to-turquoise/80 px-6 py-2.5 text-sm font-semibold text-turquoise-foreground shadow-md shadow-turquoise/20 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+              >
+                Mám zájem
+              </a>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-3 p-10 text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-turquoise/10">
+                <UtensilsCrossed className="h-7 w-7 text-turquoise/60" strokeWidth={1.4} />
+              </div>
+              <p className="text-sm text-muted-foreground">Najeďte na službu pro zobrazení podrobností</p>
+            </div>
+          )}
         </div>
       </div>
-    </div>
     </div>
   );
 }
@@ -305,7 +336,7 @@ function HomePage() {
       </section>
 
       {/* SERVICES & PRICING */}
-      <section id="sluzby" className="relative overflow-hidden bg-gradient-to-b from-secondary via-background to-secondary py-28 md:py-32">
+      <section id="sluzby" className="relative bg-gradient-to-b from-secondary via-background to-secondary py-28 md:py-32">
         <div className="mx-auto max-w-screen-2xl px-4">
           <div className="reveal-on-scroll mx-auto max-w-2xl text-center mb-16">
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-turquoise">Co nabízím</p>
@@ -313,11 +344,7 @@ function HomePage() {
             <p className="mt-5 text-muted-foreground">Vyberte si podporu podle toho, kde se na své cestě právě nacházíte.</p>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2">
-            {services.map((s, idx) => (
-              <ServiceCard key={s.title} service={s} idx={idx} />
-            ))}
-          </div>
+          <ServicesSection />
         </div>
       </section>
 
@@ -374,7 +401,7 @@ function HomePage() {
                 </div>
               </div>
               <p className="text-foreground leading-relaxed">
-                <span className="font-semibold text-turquoise">Doklad:</span> Na poskytnuté služby vím bude vystavený přijímací doklad
+                <span className="font-semibold text-turquoise">Doklad:</span> Na poskytnuté služby vám bude vystavený přijímací doklad
               </p>
             </div>
 
