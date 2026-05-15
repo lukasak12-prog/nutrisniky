@@ -40,7 +40,7 @@ export function Footer() {
         </div>
       </div>
       <div className="border-t border-brown-foreground/15 py-5 text-center text-xs text-brown-foreground/70">
-        © {new Date().getFullYear()} Hubnutí psychologií · Vyrobeno s láskou
+        © {new Date().getFullYear()} Nutrisniky · Vyrobeno s láskou
       </div>
     </footer>
   );
