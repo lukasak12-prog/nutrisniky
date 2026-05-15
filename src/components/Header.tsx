@@ -11,6 +11,7 @@ const nav = [
 export function Header({ transparent = false }: { transparent?: boolean }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isMobileWidth, setIsMobileWidth] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -19,7 +20,14 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const isTransparent = transparent && !scrolled;
+  useEffect(() => {
+    const check = () => setIsMobileWidth(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check, { passive: true });
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  const isTransparent = transparent && !scrolled && !isMobileWidth;
   const base = isTransparent
     ? "fixed inset-x-0 top-0 z-30 bg-transparent transition-all duration-300"
     : "fixed inset-x-0 top-0 z-30 border-b border-border/70 bg-background/85 shadow-[0_18px_45px_-35px_rgba(77,58,41,0.45)] backdrop-blur-xl transition-all duration-300";

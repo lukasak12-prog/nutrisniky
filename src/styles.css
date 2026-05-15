@@ -135,6 +135,17 @@
     animation: heroReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
 
+  @keyframes heroZoom {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.06); }
+  }
+
+  .animate-hero-zoom {
+    animation:
+      heroReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+      heroZoom 14s ease-in-out 1.6s infinite;
+  }
+
   @keyframes fadeInUp {
     from {
       opacity: 0;

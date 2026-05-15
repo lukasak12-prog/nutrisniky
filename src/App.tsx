@@ -9,7 +9,7 @@ import {
   Clock, MessageSquare, UtensilsCrossed, TrendingUp, Download,
   Scale, Leaf, Dumbbell, Activity, ChevronDown,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 
 const services = [
@@ -88,98 +88,154 @@ const contactSchema = z.object({
 
 function ServicesSection() {
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
-  const active = activeIdx !== null ? services[activeIdx] : null;
-  const ActiveIcon = active?.icon ?? null;
+
+  return (
+    <div className="grid items-start gap-4 sm:grid-cols-2">
+      {services.map((s, idx) => {
+        const Icon = s.icon;
+        const isActive = activeIdx === idx;
+        const isCentered = idx === 4;
+        return (
+          <div
+            key={s.title}
+            className={`reveal-on-scroll ${isCentered ? "sm:col-span-2 sm:flex sm:justify-center" : ""}`}
+            style={{ "--reveal-delay": `${Math.min(idx * 80, 240)}ms` } as React.CSSProperties}
+          >
+            <div
+              className={`rounded-3xl border bg-card/90 shadow-[0_14px_45px_-32px_rgba(77,58,41,0.4)] transition-all duration-300 hover:-translate-y-1.5 hover:bg-card hover:shadow-[0_24px_60px_-20px_rgba(131,197,190,0.45)] ${
+                isActive
+                  ? "border-turquoise/50 shadow-[0_18px_50px_-24px_rgba(77,58,41,0.5)]"
+                  : "border-border/80 hover:border-turquoise/40"
+              } ${isCentered ? "w-full sm:w-[calc(50%-8px)]" : ""}`}
+            >
+              {/* Card header — clickable toggle */}
+              <button
+                type="button"
+                className="flex w-full cursor-pointer items-center gap-4 p-5 text-left"
+                onClick={() => setActiveIdx((p) => (p === idx ? null : idx))}
+                aria-expanded={isActive}
+              >
+                <div className={`flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl transition-colors duration-300 ${isActive ? "bg-turquoise/25" : "bg-turquoise/12"}`}>
+                  <Icon className="h-6 w-6 text-turquoise" strokeWidth={1.6} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className={`text-lg font-bold leading-snug tracking-tight transition-colors duration-300 ${isActive ? "text-turquoise" : "text-foreground"}`}>{s.title}</h3>
+                </div>
+                <ChevronDown
+                  className={`h-4 w-4 shrink-0 transition-transform duration-300 ${isActive ? "rotate-180 text-turquoise" : "text-muted-foreground"}`}
+                />
+              </button>
+
+              {/* Accordion body — slides down on expand */}
+              <div
+                style={{
+                  maxHeight: isActive ? "700px" : "0px",
+                  overflow: "hidden",
+                  transition: "max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease",
+                  opacity: isActive ? 1 : 0,
+                }}
+              >
+                <div className="px-5 pb-6">
+                  <div className="mb-4 h-px bg-border/60" />
+                  {s.duration && (
+                    <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-turquoise/15 px-4 py-1.5 text-sm font-semibold text-turquoise">
+                      <Clock className="h-3.5 w-3.5" /> {s.duration}
+                    </p>
+                  )}
+                  {s.description && (
+                    <p className="mb-4 text-sm leading-7 text-muted-foreground">{s.description}</p>
+                  )}
+                  {s.items && s.items.length > 0 && (
+                    <ul className="mb-5 grid gap-2">
+                      {s.items.map((item) => (
+                        <li key={item} className="flex items-start gap-3 rounded-xl border border-border/60 bg-background/70 px-4 py-2.5 text-sm">
+                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-turquoise/20 text-turquoise">
+                            <Check className="h-3 w-3" />
+                          </span>
+                          <span className="leading-6 text-foreground">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <a
+                    href="#kontakt"
+                    className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-turquoise to-turquoise/80 px-6 py-2.5 text-sm font-semibold text-turquoise-foreground shadow-md shadow-turquoise/20 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                  >
+                    Mám zájem
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function HeroDecoration() {
+  return (
+    <div
+      className="pointer-events-none absolute inset-0 flex items-center justify-center"
+      style={{ opacity: 0.1 }}
+      aria-hidden="true"
+    >
+      <svg
+        viewBox="0 0 400 400"
+        fill="none"
+        className="h-full w-full max-h-[500px] max-w-[500px] text-turquoise"
+      >
+        <circle cx="200" cy="200" r="55"  stroke="currentColor" strokeWidth="1.5" className="animate-pulse" style={{ animationDuration: '3.5s', animationDelay: '0s' }} />
+        <circle cx="200" cy="200" r="100" stroke="currentColor" strokeWidth="1"   className="animate-pulse" style={{ animationDuration: '3.5s', animationDelay: '0.7s' }} />
+        <circle cx="200" cy="200" r="150" stroke="currentColor" strokeWidth="0.75" className="animate-pulse" style={{ animationDuration: '3.5s', animationDelay: '1.4s' }} />
+        <circle cx="200" cy="200" r="192" stroke="currentColor" strokeWidth="0.5" className="animate-pulse" style={{ animationDuration: '3.5s', animationDelay: '2.1s' }} />
+        <path
+          d="M200 128 C224 145 230 168 200 178 C170 168 176 145 200 128 Z"
+          stroke="currentColor"
+          strokeWidth="1.2"
+          className="animate-pulse"
+          style={{ animationDuration: '4s', animationDelay: '0.4s' }}
+        />
+      </svg>
+    </div>
+  );
+}
+
+function HeroMobilePhoto({ src }: { src: string }) {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    const img = imgRef.current;
+    const wrapper = wrapperRef.current;
+    if (!img || !wrapper) return;
+
+    const onScroll = () => {
+      if (window.innerWidth >= 768) return;
+      const rect = wrapper.getBoundingClientRect();
+      const viewH = window.innerHeight;
+      const progress = (viewH - rect.top) / (viewH + rect.height);
+      img.style.transform = `translateY(${(progress - 0.5) * -30}px)`;
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
     <div
-      className="grid items-start gap-6 lg:grid-cols-[1fr_380px]"
-      onMouseLeave={() => setActiveIdx(null)}
+      ref={wrapperRef}
+      className="relative mx-4 -mt-4 mb-6 overflow-hidden rounded-3xl shadow-lg"
+      style={{ height: '50vh' }}
     >
-      {/* Karta grid — nikdy se nehne */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        {services.map((s, idx) => {
-          const Icon = s.icon;
-          const isActive = activeIdx === idx;
-          return (
-            <div
-              key={s.title}
-              className="reveal-on-scroll"
-              style={{ "--reveal-delay": `${Math.min(idx * 80, 240)}ms` } as React.CSSProperties}
-            >
-              <div
-                className={`cursor-pointer rounded-3xl border bg-card/90 shadow-[0_14px_45px_-32px_rgba(77,58,41,0.4)] transition-all duration-300 ${
-                  isActive
-                    ? "border-turquoise/50 shadow-[0_18px_50px_-24px_rgba(77,58,41,0.5)]"
-                    : "border-border/80 hover:border-turquoise/20"
-                }`}
-                onMouseEnter={() => setActiveIdx(idx)}
-                onClick={() => setActiveIdx((p) => (p === idx ? null : idx))}
-              >
-                <div className="flex items-center gap-4 p-5">
-                  <div className={`flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl transition-all duration-300 ${isActive ? "bg-turquoise/25" : "bg-turquoise/12"}`}>
-                    <Icon className="h-6 w-6 text-turquoise" strokeWidth={1.6} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="mb-0.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-turquoise">Služba {idx + 1}</p>
-                    <h3 className={`text-base font-bold leading-snug tracking-tight transition-colors duration-300 ${isActive ? "text-turquoise" : "text-foreground"}`}>{s.title}</h3>
-                  </div>
-                  <ChevronDown className={`h-4 w-4 shrink-0 transition-all duration-300 ${isActive ? "rotate-180 text-turquoise" : "text-muted-foreground"}`} />
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Detail panel — sticky, vpravo na desktopu */}
-      <div className="lg:sticky lg:top-28">
-        <div className={`min-h-[220px] rounded-3xl border bg-card/90 shadow-[0_18px_60px_-38px_rgba(77,58,41,0.45)] transition-all duration-300 ${active ? "border-turquoise/40" : "border-border/80"}` }>
-          {active && ActiveIcon ? (
-            <div className="p-7">
-              <div className="mb-5 flex items-center gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-turquoise/20 text-turquoise">
-                  <ActiveIcon className="h-6 w-6" strokeWidth={1.6} />
-                </div>
-                <h3 className="text-xl font-bold text-foreground">{active.title}</h3>
-              </div>
-              {active.duration && (
-                <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-turquoise/15 px-4 py-1.5 text-sm font-semibold text-turquoise">
-                  <Clock className="h-3.5 w-3.5" /> {active.duration}
-                </p>
-              )}
-              {active.description && (
-                <p className="mb-4 text-sm leading-7 text-muted-foreground">{active.description}</p>
-              )}
-              {active.items && active.items.length > 0 && (
-                <ul className="mb-6 grid gap-2">
-                  {active.items.map((item) => (
-                    <li key={item} className="flex items-start gap-3 rounded-xl border border-border/60 bg-background/70 px-4 py-2.5 text-sm">
-                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-turquoise/20 text-turquoise">
-                        <Check className="h-3 w-3" />
-                      </span>
-                      <span className="leading-6 text-foreground">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <a
-                href="#kontakt"
-                className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-turquoise to-turquoise/80 px-6 py-2.5 text-sm font-semibold text-turquoise-foreground shadow-md shadow-turquoise/20 transition-all duration-300 hover:scale-105 hover:shadow-lg"
-              >
-                Mám zájem
-              </a>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center gap-3 p-10 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-turquoise/10">
-                <UtensilsCrossed className="h-7 w-7 text-turquoise/60" strokeWidth={1.4} />
-              </div>
-              <p className="text-sm text-muted-foreground">Najeďte na službu pro zobrazení podrobností</p>
-            </div>
-          )}
-        </div>
-      </div>
+      <img
+        ref={imgRef}
+        src={src}
+        alt="Nutriční terapeutka Nicola Zounková"
+        className="h-[115%] w-full object-cover object-[80%_top] animate-fade-in-up"
+        style={{ marginTop: '-15px', willChange: 'transform' }}
+      />
     </div>
   );
 }
@@ -190,77 +246,112 @@ function HomePage() {
   return (
     <Layout transparentHeader>
       {/* HERO */}
-      <section id="hero" className="relative isolate min-h-[88vh] w-full overflow-hidden">
-        <img
-          src={heroImg}
-          alt="Nutriční terapeutka v moderní kuchyni"
-          width={1920}
-          height={1080}
-          className="absolute inset-0 h-full w-full object-cover object-[70%_18%] animate-hero-reveal"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/35 to-transparent" />
-        <div className="relative z-10 mx-auto flex min-h-[88vh] max-w-screen-2xl items-center px-4 pt-32 pb-20">
-          <div className="max-w-2xl">
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-xs uppercase tracking-[0.2em] backdrop-blur animate-fade-in" style={{ animationDelay: '0.1s' }}>
-              <Sparkles className="h-3.5 w-3.5" /> Tišnov · Online
-            </p>
-            
-            {/* Main Title with Background */}
-            <div className="relative mb-8">
-              {/* Subtle gradient background */}
-              <div className="absolute -inset-6 bg-gradient-to-r from-turquoise/15 via-white/5 to-transparent rounded-3xl blur-2xl opacity-60"></div>
-              
-              <div className="relative">
-                <h1 className="text-5xl font-semibold leading-[1.02] tracking-[-0.055em] text-white sm:text-6xl md:text-7xl lg:text-8xl animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                  Nutriční terapeut
-                </h1>
-                <h2 className="text-5xl font-semibold leading-[1.02] tracking-[-0.055em] text-white sm:text-6xl md:text-7xl lg:text-8xl animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-                  
-                </h2>
-                <div className="mt-4 h-1 w-16 bg-gradient-to-r from-turquoise to-turquoise/50 rounded-full animate-fade-in" style={{ animationDelay: '0.4s' }}></div>
-                <p className="mt-6 text-2xl font-medium text-white/95 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
-                  Mgr. Nicola Zounková
+      <section id="hero" className="w-full overflow-hidden">
+
+        {/* ━━━ MOBILE layout (< md) ━━━ */}
+        <div className="flex flex-col bg-background md:hidden">
+          {/* Text block with subtle SVG decoration behind */}
+          <div className="relative overflow-hidden px-6 pb-10 pt-24 text-center">
+            <HeroDecoration />
+            <div className="relative z-10 mx-auto max-w-sm">
+              <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-turquoise/25 bg-turquoise/10 px-4 py-1.5 text-xs uppercase tracking-[0.2em] text-turquoise animate-fade-in" style={{ animationDelay: '0.1s' }}>
+                <Sparkles className="h-3.5 w-3.5" /> Tišnov · Online
+              </p>
+              <h1 className="text-4xl font-semibold leading-[1.05] tracking-[-0.055em] text-foreground animate-fade-in-up sm:text-5xl" style={{ animationDelay: '0.2s' }}>
+                Nutriční terapeut
+              </h1>
+              <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-gradient-to-r from-turquoise to-turquoise/50 animate-fade-in" style={{ animationDelay: '0.35s' }} />
+              <p className="mt-5 text-xl font-medium text-foreground/80 animate-fade-in-up" style={{ animationDelay: '0.45s' }}>
+                Mgr. Nicola Zounková
+              </p>
+              <div className="mt-8 rounded-2xl border border-turquoise/20 bg-turquoise/10 p-5 text-left animate-fade-in-up" style={{ animationDelay: '0.55s' }}>
+                <p className="text-sm font-medium leading-7 text-foreground">
+                  <span className="font-semibold text-turquoise">Kromě toho, co jíst,</span> poradím i jak na zdravý vztah k jídlu a disciplínu.
+                </p>
+                <p className="mt-3 text-sm font-medium leading-7 text-foreground">
+                  <span className="font-semibold text-turquoise">Společně najdeme cestu,</span> která vám vydrží.
                 </p>
               </div>
+              <div className="mt-8 flex flex-col items-center gap-3 animate-fade-in-up" style={{ animationDelay: '0.65s' }}>
+                <a
+                  href="#kontakt"
+                  className="w-full rounded-full bg-turquoise px-8 py-4 text-sm font-semibold text-turquoise-foreground shadow-lg transition hover:scale-105 hover:shadow-xl duration-300"
+                >
+                  Zhodnocení stravování zdarma
+                </a>
+                <a
+                  href="#sluzby"
+                  className="w-full rounded-full border border-turquoise/40 bg-turquoise/10 px-8 py-4 text-sm font-medium text-turquoise transition hover:bg-turquoise/20 duration-300"
+                >
+                  Služby a ceník
+                </a>
+              </div>
             </div>
+          </div>
 
-            {/* Description with enhanced styling */}
-            <div className="relative mb-8 max-w-3xl overflow-hidden rounded-[2rem] border border-white/25 bg-black/35 p-6 shadow-2xl shadow-black/20 backdrop-blur-xl animate-fade-in-up sm:p-8" style={{ animationDelay: '0.6s' }}>
-              <div className="absolute inset-0 bg-gradient-to-br from-white/12 via-white/6 to-transparent"></div>
-              <p className="relative max-w-2xl text-base font-medium leading-8 text-white sm:text-lg">
-                <span className="font-semibold text-turquoise">Kromě toho, co jíst,</span> poradím i jak na zdravý vztah k jídlu a disciplínu.
-              </p>
-              <p className="relative mt-4 max-w-2xl text-base font-medium leading-8 text-white sm:text-lg">
-                <span className="font-semibold text-turquoise">Společně najdeme cestu,</span> která vám vydrží.
-              </p>
-            </div>
+          {/* Photo with scroll-based parallax + fade-in-up */}
+          <HeroMobilePhoto src={heroImg} />
+        </div>
 
-            {/* CTA Buttons */}
-            <div className="mt-10 flex flex-wrap gap-4 animate-fade-in-up" style={{ animationDelay: '0.7s' }}>
-              <a
-                href="#kontakt"
-                className="rounded-full bg-turquoise px-8 py-4 text-sm font-semibold text-turquoise-foreground shadow-xl transition hover:shadow-2xl hover:scale-105 duration-300 transform"
-              >
-                Zhodnocení stravování zdarma
-              </a>
-              <a
-                href="#sluzby"
-                className="rounded-full border border-white/40 bg-white/10 px-8 py-4 text-sm font-medium text-white backdrop-blur transition hover:bg-white/20 hover:border-white/60 duration-300"
-              >
-                Služby a ceník
-              </a>
+        {/* ━━━ DESKTOP layout (≥ md) — original overlay unchanged ━━━ */}
+        <div className="relative isolate hidden min-h-[88vh] md:block">
+          <img
+            src={heroImg}
+            alt="Nutriční terapeutka v moderní kuchyni"
+            width={1920}
+            height={1080}
+            className="absolute inset-0 h-full w-full object-cover object-[70%_18%] animate-hero-zoom"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/35 to-transparent" />
+          <div className="relative z-10 mx-auto flex min-h-[88vh] max-w-screen-2xl items-center px-4 pt-32 pb-20">
+            <div className="max-w-2xl">
+              <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-xs uppercase tracking-[0.2em] text-white backdrop-blur animate-fade-in" style={{ animationDelay: '0.1s' }}>
+                <Sparkles className="h-3.5 w-3.5" /> Tišnov · Online
+              </p>
+              <div className="relative mb-8">
+                <div className="absolute -inset-6 rounded-3xl bg-gradient-to-r from-turquoise/15 via-white/5 to-transparent blur-2xl opacity-60" />
+                <div className="relative">
+                  <h1 className="text-5xl font-semibold leading-[1.02] tracking-[-0.055em] text-white animate-fade-in-up sm:text-6xl md:text-7xl lg:text-8xl" style={{ animationDelay: '0.2s' }}>
+                    Nutriční terapeut
+                  </h1>
+                  <h2 className="text-5xl font-semibold leading-[1.02] tracking-[-0.055em] text-white animate-fade-in-up sm:text-6xl md:text-7xl lg:text-8xl" style={{ animationDelay: '0.3s' }}>
+                    
+                  </h2>
+                  <div className="mt-4 h-1 w-16 rounded-full bg-gradient-to-r from-turquoise to-turquoise/50 animate-fade-in" style={{ animationDelay: '0.4s' }} />
+                  <p className="mt-6 text-2xl font-medium text-white/95 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
+                    Mgr. Nicola Zounková
+                  </p>
+                </div>
+              </div>
+              <div className="relative mb-8 max-w-3xl overflow-hidden rounded-[2rem] border border-white/25 bg-black/35 p-6 shadow-2xl shadow-black/20 backdrop-blur-xl animate-fade-in-up sm:p-8" style={{ animationDelay: '0.6s' }}>
+                <div className="absolute inset-0 bg-gradient-to-br from-white/12 via-white/6 to-transparent" />
+                <p className="relative max-w-2xl text-base font-medium leading-8 text-white sm:text-lg">
+                  <span className="font-semibold text-turquoise">Kromě toho, co jíst,</span> poradím i jak na zdravý vztah k jídlu a disciplínu.
+                </p>
+                <p className="relative mt-4 max-w-2xl text-base font-medium leading-8 text-white sm:text-lg">
+                  <span className="font-semibold text-turquoise">Společně najdeme cestu,</span> která vám vydrží.
+                </p>
+              </div>
+              <div className="mt-10 flex flex-wrap gap-4 animate-fade-in-up" style={{ animationDelay: '0.7s' }}>
+                <a
+                  href="#kontakt"
+                  className="rounded-full bg-turquoise px-8 py-4 text-sm font-semibold text-turquoise-foreground shadow-xl transition hover:shadow-2xl hover:scale-105 duration-300 transform"
+                >
+                  Zhodnocení stravování zdarma
+                </a>
+                <a
+                  href="#sluzby"
+                  className="rounded-full border border-white/40 bg-white/10 px-8 py-4 text-sm font-medium text-white backdrop-blur transition hover:bg-white/20 hover:border-white/60 duration-300"
+                >
+                  Služby a ceník
+                </a>
+              </div>
             </div>
           </div>
         </div>
+
       </section>
 
-      {/* location strip */}
-      <div className="border-b border-border/70 bg-background/70 py-5 text-center shadow-sm backdrop-blur">
-        <p className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/80 px-5 py-2 text-sm font-medium text-muted-foreground shadow-sm">
-          <MapPin className="h-4 w-4 text-turquoise" />
-          <span>Tišnov</span> <span className="opacity-50">/</span> <span>Online</span>
-        </p>
-      </div>
 
       {/* S CIM VAM MOHU POMOCI */}
       <section className="relative overflow-hidden bg-secondary py-28 md:py-32">
