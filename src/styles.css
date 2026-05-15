@@ -202,6 +202,18 @@
     animation: float 3s ease-in-out infinite;
   }
 
+  @keyframes cardShimmer {
+    0%   { transform: translateX(-160%) skewX(-20deg); opacity: 0; }
+    8%   { opacity: 1; }
+    38%  { opacity: 1; }
+    44%  { transform: translateX(360%) skewX(-20deg); opacity: 0; }
+    100% { transform: translateX(-160%) skewX(-20deg); opacity: 0; }
+  }
+
+  .animate-card-shimmer {
+    animation: cardShimmer 6s ease-in-out infinite;
+  }
+
   .text-glow {
     text-shadow: 0 0 20px rgba(131, 197, 190, 0.3);
   }

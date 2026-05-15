@@ -102,12 +102,17 @@ function ServicesSection() {
             style={{ "--reveal-delay": `${Math.min(idx * 80, 240)}ms` } as React.CSSProperties}
           >
             <div
-              className={`rounded-3xl border bg-card/90 shadow-[0_14px_45px_-32px_rgba(77,58,41,0.4)] transition-all duration-300 hover:-translate-y-1.5 hover:bg-card hover:shadow-[0_24px_60px_-20px_rgba(131,197,190,0.45)] ${
+              className={`relative overflow-hidden rounded-3xl border bg-card/90 shadow-[0_14px_45px_-32px_rgba(77,58,41,0.4)] transition-all duration-300 hover:-translate-y-1.5 hover:bg-card hover:shadow-[0_24px_60px_-20px_rgba(131,197,190,0.45)] ${
                 isActive
                   ? "border-turquoise/50 shadow-[0_18px_50px_-24px_rgba(77,58,41,0.5)]"
                   : "border-border/80 hover:border-turquoise/40"
               } ${isCentered ? "w-full sm:w-[calc(50%-8px)]" : ""}`}
             >
+              {/* Ambient card shimmer */}
+              <div
+                className="animate-card-shimmer pointer-events-none absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-white/15 to-transparent"
+                style={{ animationDelay: `${idx * 1.8}s` }}
+              />
               {/* Card header — clickable toggle */}
               <button
                 type="button"
@@ -115,8 +120,15 @@ function ServicesSection() {
                 onClick={() => setActiveIdx((p) => (p === idx ? null : idx))}
                 aria-expanded={isActive}
               >
-                <div className={`flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl transition-colors duration-300 ${isActive ? "bg-turquoise/25" : "bg-turquoise/12"}`}>
-                  <Icon className="h-6 w-6 text-turquoise" strokeWidth={1.6} />
+                <div
+                  className={`animate-float relative flex h-13 w-13 shrink-0 items-center justify-center overflow-hidden rounded-2xl transition-colors duration-300 ${isActive ? "bg-turquoise/25" : "bg-turquoise/12"}`}
+                  style={{ animationDelay: `${idx * 0.6}s` }}
+                >
+                  <div
+                    className="animate-card-shimmer absolute inset-y-0 w-full bg-gradient-to-r from-transparent via-white/50 to-transparent pointer-events-none"
+                    style={{ animationDelay: `${idx * 2}s` }}
+                  />
+                  <Icon className="relative z-10 h-6 w-6 text-turquoise" strokeWidth={1.6} />
                 </div>
                 <div className="min-w-0 flex-1">
                   <h3 className={`text-lg font-bold leading-snug tracking-tight transition-colors duration-300 ${isActive ? "text-turquoise" : "text-foreground"}`}>{s.title}</h3>
@@ -407,8 +419,16 @@ function HomePage() {
                   {/* Visual area */}
                   <div className={`relative flex h-52 items-center justify-center bg-gradient-to-br ${item.accent} overflow-hidden`}>
                     <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'radial-gradient(circle at 70% 30%, rgba(255,255,255,0.4) 0%, transparent 60%)' }} />
-                    <div className={`relative flex h-20 w-20 items-center justify-center rounded-2xl ${item.iconBg} shadow-sm transition-transform duration-500 group-hover:scale-110`}>
-                      <Icon className={`h-10 w-10 ${item.iconColor}`} strokeWidth={1.5} />
+                    {/* Shimmer sweep */}
+                    <div
+                      className="animate-card-shimmer absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none"
+                      style={{ animationDelay: `${idx * 1.5}s` }}
+                    />
+                    {/* Icon with float */}
+                    <div className="animate-float" style={{ animationDelay: `${idx * 0.55}s` }}>
+                      <div className={`relative flex h-20 w-20 items-center justify-center rounded-2xl ${item.iconBg} shadow-sm transition-transform duration-300 group-hover:scale-110`}>
+                        <Icon className={`h-10 w-10 ${item.iconColor}`} strokeWidth={1.5} />
+                      </div>
                     </div>
                   </div>
                   {/* Content */}
@@ -735,9 +755,12 @@ function ContactForm() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const fd = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const fd = new FormData(form);
     const result = contactSchema.safeParse({
       name: fd.get("name"),
       email: fd.get("email"),
@@ -749,7 +772,25 @@ function ContactForm() {
       return;
     }
     setError(null);
-    setSent(true);
+    setSubmitting(true);
+    try {
+      const res = await fetch("https://formspree.io/f/xzdonvvg", {
+        method: "POST",
+        body: fd,
+        headers: { Accept: "application/json" },
+      });
+      if (res.ok) {
+        form.reset();
+        setSent(true);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setError(data?.errors?.[0]?.message ?? "Nepodařilo se odeslat zprávu. Zkuste to prosím znovu.");
+      }
+    } catch {
+      setError("Nepodařilo se odeslat zprávu. Zkontrolujte připojení k internetu.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -766,17 +807,23 @@ function ContactForm() {
           className="w-full rounded-2xl border border-input bg-background/80 px-5 py-4 text-sm shadow-inner transition focus:border-turquoise focus:outline-none focus:ring-2 focus:ring-turquoise/40"
         />
       </div>
-      {error && <p className="text-sm text-destructive">{error}</p>}
-      {sent ? (
-        <p className="rounded-full bg-turquoise/30 px-6 py-3 text-center text-sm font-medium text-foreground">
-          Děkuji! Ozvu se vám brzy.
+      {error && (
+        <p className="rounded-2xl bg-destructive/10 px-5 py-3 text-center text-sm font-medium text-destructive">
+          {error}
         </p>
+      )}
+      {sent ? (
+        <div className="rounded-2xl border border-turquoise/30 bg-turquoise/10 px-6 py-5 text-center">
+          <p className="text-sm font-semibold text-turquoise">✓ Zpráva byla úspěšně odeslána!</p>
+          <p className="mt-1 text-sm text-foreground/70">Děkuji za váš zájem. Ozvu se vám brzy.</p>
+        </div>
       ) : (
         <button
           type="submit"
-          className="w-full rounded-full bg-brown px-8 py-3.5 text-sm font-semibold text-brown-foreground shadow-lg shadow-brown/20 transition hover:-translate-y-0.5 hover:opacity-95"
+          disabled={submitting}
+          className="w-full rounded-full bg-brown px-8 py-3.5 text-sm font-semibold text-brown-foreground shadow-lg shadow-brown/20 transition hover:-translate-y-0.5 hover:opacity-95 disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          Odeslat zprávu
+          {submitting ? "Odesílám…" : "Odeslat zprávu"}
         </button>
       )}
     </form>
