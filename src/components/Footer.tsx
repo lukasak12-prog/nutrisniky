@@ -12,10 +12,10 @@ export function Footer() {
             <Mail className="h-4 w-4" /> nutrisniky@seznam.cz
           </a>
           <p className="flex items-center gap-2 text-brown-foreground/90">
-            <MapPin className="h-4 w-4" /> Brno Příkop 2a / Online
+            <MapPin className="h-4 w-4" /> Tišnov
           </p>
           <p className="flex items-center gap-2 text-brown-foreground/90">
-            <BadgeCheck className="h-4 w-4" /> IČO: 19721421
+            <BadgeCheck className="h-4 w-4" /> IČO: 
           </p>
           <div className="flex gap-3 pt-3">
             <a href="#" aria-label="Instagram" className="rounded-full border border-brown-foreground/30 p-2 transition hover:-translate-y-0.5 hover:bg-brown-foreground/10">
