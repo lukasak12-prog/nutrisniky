@@ -1,4 +1,4 @@
-import { Phone, Mail, MapPin, BadgeCheck, Instagram, Linkedin } from "lucide-react";
+import { Phone, Mail, MapPin, BadgeCheck } from "lucide-react";
 
 export function Footer() {
   return (
@@ -12,19 +12,11 @@ export function Footer() {
             <Mail className="h-4 w-4" /> nutrisniky@seznam.cz
           </a>
           <p className="flex items-center gap-2 text-brown-foreground/90">
-            <MapPin className="h-4 w-4" /> Tišnov
+            <MapPin className="h-4 w-4" /> nám. Míru 24, 666 01 Tišnov 1
           </p>
           <p className="flex items-center gap-2 text-brown-foreground/90">
-            <BadgeCheck className="h-4 w-4" /> IČO: 
+            <BadgeCheck className="h-4 w-4" /> IČO: 221 51 290 
           </p>
-          <div className="flex gap-3 pt-3">
-            <a href="#" aria-label="Instagram" className="rounded-full border border-brown-foreground/30 p-2 transition hover:-translate-y-0.5 hover:bg-brown-foreground/10">
-              <Instagram className="h-4 w-4" />
-            </a>
-            <a href="#" aria-label="LinkedIn" className="rounded-full border border-brown-foreground/30 p-2 transition hover:-translate-y-0.5 hover:bg-brown-foreground/10">
-              <Linkedin className="h-4 w-4" />
-            </a>
-          </div>
         </div>
 
         <div className="space-y-2 text-sm text-brown-foreground/80">
@@ -35,8 +27,8 @@ export function Footer() {
 
         <div className="space-y-2 text-sm font-semibold">
           <a href="#sluzby" className="block underline-offset-4 transition hover:text-turquoise hover:underline">Jídelníček na míru</a>
-          <a href="#sluzby" className="block underline-offset-4 transition hover:text-turquoise hover:underline">Výživové poradenství Brno</a>
-          <a href="#kontakt" className="block underline-offset-4 transition hover:text-turquoise hover:underline">Konzultace zdarma</a>
+          <a href="#sluzby" className="block underline-offset-4 transition hover:text-turquoise hover:underline">Nutriční poradenství Tišnov</a>
+          <a href="#kontakt" className="block underline-offset-4 transition hover:text-turquoise hover:underline">Konzultace</a>
         </div>
       </div>
       <div className="border-t border-brown-foreground/15 py-5 text-center text-xs text-brown-foreground/70">

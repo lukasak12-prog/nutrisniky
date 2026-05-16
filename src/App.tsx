@@ -39,7 +39,7 @@ const services = [
   {
     icon: MessageSquare,
     title: "Online konzultace",
-    description: "V mé nutriční ambulanci upřednostňuji osobní kontakt, který vím umožní osobní setkání. Osobní setkání provést měření na Inbody 270. Nicméně jsou situace, kdy je kvůli okolnostem vhodná online konzultace.",
+    description: "V mé nutriční ambulanci upřednostňuji osobní kontakt, který považuji za nenahraditelný. Osobní setkání nám umožňuje provést měření na Inbody a podrobněji probrat vaše obtíže. Nicméně jsou situace, kdy je kvůli větší vzdálenosti či jiným okolnostem výhodná online konzultace.",
     items: [
       "Délka konzultace 60 minut",
       "Kompletní anamnéza pacienta (osobní, rodinná, sociální...) nutriční anamnéza, léky a jiné",
@@ -50,7 +50,7 @@ const services = [
   {
     icon: UtensilsCrossed,
     title: "Individuální jídelníček",
-    description: "Po úvodní konzultaci vím mohu zpracovat individuální jídelníček na 7 nebo 14 dní, který bude zohledňovat vaše osobní potřeby, zdravotní stav a podobně. Vypracovaný jídelníček vím bude následně zaslán na vaši e-mailovou adresu, nebo si ho můžete osobně vyzvedout.",
+    description: "Po úvodní konzultaci vám mohu zpracovat individuální jídelníček na 7 nebo 14 dní, který bude zohledňovat vaše osobní potřeby, zdravotní stav a podobně. Vypracovaný jídelníček vám bude následně zaslán na vaši e-mailovou adresu, nebo si ho můžete osobně vyzvednout.",
   },
   {
     icon: TrendingUp,
@@ -289,7 +289,7 @@ function HomePage() {
                   href="#kontakt"
                   className="w-full rounded-full bg-turquoise px-8 py-4 text-sm font-semibold text-turquoise-foreground shadow-lg transition hover:scale-105 hover:shadow-xl duration-300"
                 >
-                  Zhodnocení stravování zdarma
+                  Kontakt
                 </a>
                 <a
                   href="#sluzby"
@@ -349,7 +349,7 @@ function HomePage() {
                   href="#kontakt"
                   className="rounded-full bg-turquoise px-8 py-4 text-sm font-semibold text-turquoise-foreground shadow-xl transition hover:shadow-2xl hover:scale-105 duration-300 transform"
                 >
-                  Zhodnocení stravování zdarma
+                  Kontakt
                 </a>
                 <a
                   href="#sluzby"
@@ -379,7 +379,7 @@ function HomePage() {
               {
                 icon: Scale,
                 title: "Hubnutí a přibírání na váze",
-                text: "Sestavím individuální plán pro dosažení zdravé váhy, který bude dlouhodobě udržitelný.",
+                text: "Sestavím individuální plán pro dosažení zdravé tělesné hmotnosti",
                 accent: "from-turquoise/30 to-turquoise/5",
                 iconColor: "text-turquoise",
                 iconBg: "bg-turquoise/15",
@@ -450,7 +450,7 @@ function HomePage() {
       <section id="sluzby" className="relative bg-gradient-to-b from-secondary via-background to-secondary py-28 md:py-32">
         <div className="mx-auto max-w-screen-2xl px-4">
           <div className="reveal-on-scroll mx-auto max-w-2xl text-center mb-16">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-turquoise">Co nabízím</p>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-turquoise"></p>
             <h2 className="text-4xl font-medium leading-tight md:text-5xl">Služby</h2>
             <p className="mt-5 text-muted-foreground">Vyberte si podporu podle toho, kde se na své cestě právě nacházíte.</p>
           </div>
@@ -463,9 +463,9 @@ function HomePage() {
       <section id="cenik" className="bg-secondary py-28 md:py-32">
         <div className="mx-auto max-w-screen-2xl px-4">
           <div className="reveal-on-scroll mx-auto max-w-2xl text-center mb-16">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-turquoise">Transparentní ceny</p>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-turquoise"></p>
             <h2 className="text-4xl font-medium leading-tight md:text-5xl">Ceník služeb</h2>
-            <p className="mt-5 text-muted-foreground">Přehledné ceny bez skrytých poplatků.</p>
+            <p className="mt-5 text-muted-foreground"></p>
           </div>
 
           <div className="grid gap-5 md:grid-cols-2">
@@ -608,7 +608,7 @@ function HomePage() {
             </p>
             <div className="mt-10 grid gap-8 sm:grid-cols-3">
               <AboutItem icon={<GraduationCap className="h-7 w-7" />} title="Vzdělání" text="Vysokoškolsky vzdělaná nutriční terapeutka." />
-              <AboutItem icon={<Award className="h-7 w-7" />} title="Praxe" text="Stovky spokojených klientů." />
+              <AboutItem icon={<Award className="h-7 w-7" />} title="Praxe" text="Desítky spokojených klientů." />
               <AboutItem icon={<Heart className="h-7 w-7" />} title="Přístup" text="Empatický a individuální." />
             </div>
           </div>
