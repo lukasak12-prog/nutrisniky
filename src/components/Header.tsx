@@ -1,4 +1,5 @@
-import { Phone, Menu, X, Brain, Instagram, Facebook } from "lucide-react";
+import { Phone, Menu, X, Instagram, Facebook } from "lucide-react";
+import logoImg from "@/assets/nutrisniky2.png";
 import { useState, useEffect } from "react";
 
 const nav = [
@@ -35,14 +36,9 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
 
   return (
     <header className={base}>
-      <div className="mx-auto flex max-w-screen-2xl items-center justify-between gap-4 px-4 py-4">
-        <a href="/" className={`group flex items-center gap-3 rounded-full ${isTransparent ? "bg-white/10" : "bg-card/80"} px-3 py-2 shadow-sm backdrop-blur transition hover:-translate-y-0.5 ${textColor}`}>
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-turquoise/90 text-turquoise-foreground shadow-sm">
-            <Brain className="h-5 w-5" strokeWidth={1.8} />
-          </span>
-          <span className="text-xs font-bold uppercase tracking-[0.22em]">
-            NUTRISNIKY
-          </span>
+      <div className={`mx-auto flex max-w-screen-2xl items-center justify-between gap-4 px-4 transition-all duration-300 ${scrolled ? "py-2" : "py-4"}`}>
+        <a href="/" className="group transition hover:-translate-y-0.5 hover:opacity-90">
+          <img src={logoImg} alt="Nutrisniky" className={`w-auto rounded-xl transition-all duration-300 ${scrolled ? "h-8 md:h-12" : "h-10 md:h-16"}`} />
         </a>
 
         <nav className={`hidden items-center gap-8 lg:flex ${textColor}`}>
