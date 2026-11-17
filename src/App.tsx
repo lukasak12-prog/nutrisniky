@@ -13,6 +13,7 @@ import {
   GraduationCap, Award, Heart, Phone, Mail,
   Clock, MessageSquare, UtensilsCrossed, TrendingUp, Download,
   Scale, Leaf, Dumbbell, Activity, ChevronDown,
+  Banknote, ReceiptText, ShieldCheck,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
@@ -91,102 +92,301 @@ const contactSchema = z.object({
   message: z.string().trim().max(1000).optional(),
 });
 
-function ServicesSection() {
-  const [activeIdx, setActiveIdx] = useState<number | null>(null);
+type Service = (typeof services)[number];
+
+const minutesOf = (s: Service) => {
+  const src = [s.duration ?? "", ...(s.items ?? [])].join(" ");
+  const m = src.match(/(\d+)\s*minut/);
+  return m ? Number(m[1]) : null;
+};
+
+/** Délka konzultace jako kruhový ukazatel (60 min = plný kruh). */
+function DurationRing({ minutes, size = 64, compact = false }: { minutes: number; size?: number; compact?: boolean }) {
+  const r = 26;
+  const c = 2 * Math.PI * r;
+  const filled = Math.min(minutes / 60, 1) * c;
+  return (
+    <div className="relative shrink-0" style={{ width: size, height: size }} aria-label={`${minutes} minut`}>
+      <svg viewBox="0 0 64 64" className="h-full w-full -rotate-90">
+        <circle cx="32" cy="32" r={r} fill="none" strokeWidth="6" className="stroke-turquoise/15" />
+        <circle
+          cx="32"
+          cy="32"
+          r={r}
+          fill="none"
+          strokeWidth="6"
+          strokeLinecap="round"
+          strokeDasharray={`${filled} ${c}`}
+          className="stroke-turquoise transition-[stroke-dasharray] duration-700"
+        />
+      </svg>
+      <span className="absolute inset-0 flex flex-col items-center justify-center leading-none">
+        <span className="font-bold text-foreground" style={{ fontSize: size * 0.28 }}>{minutes}</span>
+        {!compact && <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">min</span>}
+      </span>
+    </div>
+  );
+}
+
+/** Jídelníček na 7 nebo 14 dní jako mřížka dní. */
+function DayGrid() {
+  return (
+    <div className="shrink-0" aria-label="7 nebo 14 dní">
+      <div className="grid grid-cols-7 gap-1">
+        {Array.from({ length: 14 }, (_, i) => (
+          <span key={i} className={`h-3.5 w-3.5 rounded-[4px] ${i < 7 ? "bg-turquoise" : "bg-turquoise/25"}`} />
+        ))}
+      </div>
+      <p className="mt-2 flex justify-between text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <span>7 dní</span>
+        <span>14 dní</span>
+      </p>
+    </div>
+  );
+}
+
+function CheckList({ items }: { items: string[] }) {
+  return (
+    <ul className="grid gap-2">
+      {items.map((item) => (
+        <li key={item} className="flex items-start gap-3 rounded-xl border border-border/60 bg-background/70 px-4 py-2.5 text-sm">
+          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-turquoise/20 text-turquoise">
+            <Check className="h-3 w-3" />
+          </span>
+          <span className="leading-6 text-foreground">{item}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function ServiceCard({ s, featured = false }: { s: Service; featured?: boolean }) {
+  const Icon = s.icon;
+  const minutes = minutesOf(s);
+  const isInbody = s.title.toLowerCase().includes("inbody");
+  const isMenu = s.title.toLowerCase().includes("jídelníček");
+  const items = (s.items ?? []).filter((i) => !i.startsWith("Délka konzultace"));
+
+  const graphic = minutes ? <DurationRing minutes={minutes} size={featured ? 88 : 64} /> : isMenu ? <DayGrid /> : null;
 
   return (
-    <div className="grid items-start gap-4 sm:grid-cols-2">
-      {services.map((s, idx) => {
-        const Icon = s.icon;
-        const isActive = activeIdx === idx;
-        const isCentered = idx === 4;
-        return (
+    <div
+      className={`group flex h-full flex-col rounded-3xl border border-border/80 bg-card/90 p-7 shadow-[0_14px_45px_-32px_rgba(77,58,41,0.4)] transition-all duration-300 hover:-translate-y-1 hover:border-turquoise/40 hover:shadow-[0_24px_60px_-28px_rgba(131,197,190,0.45)] ${
+        featured ? "md:p-9" : ""
+      }`}
+    >
+      <div className={featured ? "grid gap-8 md:grid-cols-[0.9fr_1.1fr] md:items-center" : ""}>
+        <div>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-turquoise/12">
+              <Icon className="h-6 w-6 text-turquoise" strokeWidth={1.6} />
+            </div>
+            {!featured && graphic}
+          </div>
+          <h3 className={`mt-5 font-bold tracking-tight text-foreground ${featured ? "text-2xl md:text-3xl" : "text-xl"}`}>{s.title}</h3>
+          {featured && graphic && <div className="mt-6">{graphic}</div>}
+          {s.description && <p className="mt-3 text-sm leading-7 text-muted-foreground">{s.description}</p>}
+        </div>
+
+        {items.length > 0 &&
+          (isInbody ? (
+            <ul className="mt-5 flex flex-wrap gap-2">
+              {items.map((item) => (
+                <li
+                  key={item}
+                  className={`rounded-full px-3.5 py-1.5 text-xs font-semibold ${
+                    item.startsWith("A mnohem") ? "border border-dashed border-turquoise/50 text-turquoise" : "bg-turquoise/12 text-foreground"
+                  }`}
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className={featured ? "" : "mt-5"}>
+              <CheckList items={items} />
+            </div>
+          ))}
+      </div>
+    </div>
+  );
+}
+
+const priceGroups = [
+  {
+    icon: Clock,
+    title: "Konzultace",
+    rows: [
+      { name: "Vstupní konzultace", minutes: 60, note: "vč. InBody", price: "1000" },
+      { name: "Následující konzultace", minutes: 30, price: "700" },
+      { name: "Online konzultace", minutes: 60, price: "1000" },
+    ],
+  },
+  {
+    icon: UtensilsCrossed,
+    title: "Individuální jídelníček",
+    rows: [
+      { name: "na 7 dní", days: 7, price: "2000" },
+      { name: "na 14 dní", days: 14, price: "4000" },
+    ],
+  },
+  {
+    icon: TrendingUp,
+    title: "Měření na Inbody",
+    rows: [
+      { name: "bez interpretace výsledků", price: "280" },
+      { name: "včetně interpretace výsledků", price: "350" },
+    ],
+  },
+] as const;
+
+const priceNotes = [
+  { icon: Banknote, label: "Platba", text: "Pouze v hotovosti nebo přes QR kód" },
+  { icon: ReceiptText, label: "Doklad", text: "Na poskytnuté služby vám bude vystavený přijímací doklad" },
+  {
+    icon: ShieldCheck,
+    label: "Pojišťovna",
+    text: "Služby nutriční ambulance nejsou hrazeny zdravotní pojišťovnou. Některé služby splňující podmínky mohou být částečně proplaceny zdravotními pojišťovnami v rámci prevence.",
+  },
+];
+
+const fmtPrice = (p: string) => new Intl.NumberFormat("cs-CZ").format(Number(p));
+
+function DayBar({ days }: { days: number }) {
+  return (
+    <div className="grid w-[46px] shrink-0 grid-cols-7 gap-[3px]" aria-label={`${days} dní`}>
+      {Array.from({ length: 14 }, (_, i) => (
+        <span key={i} className={`h-[4px] rounded-full ${i < days ? "bg-turquoise" : "bg-turquoise/15"}`} />
+      ))}
+    </div>
+  );
+}
+
+function PriceList() {
+  return (
+    <>
+      <div className="grid gap-5 lg:grid-cols-3">
+        {priceGroups.map((g, gi) => {
+          const Icon = g.icon;
+          return (
+            <div
+              key={g.title}
+              className="reveal-on-scroll flex flex-col rounded-3xl border border-border/80 bg-card/90 p-7 shadow-[0_14px_45px_-32px_rgba(77,58,41,0.5)]"
+              style={{ "--reveal-delay": `${gi * 90}ms` } as React.CSSProperties}
+            >
+              <div className="flex items-center gap-3 border-b border-border/70 pb-5">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-turquoise/12">
+                  <Icon className="h-5 w-5 text-turquoise" strokeWidth={1.7} />
+                </div>
+                <h3 className="text-lg font-bold tracking-tight text-foreground">{g.title}</h3>
+              </div>
+
+              <ul className="flex-1">
+                {g.rows.map((r) => (
+                  <li key={r.name} className="flex items-center gap-4 border-b border-dashed border-border py-5 last:border-0 last:pb-0">
+                    <div className="flex w-[46px] shrink-0 justify-center">
+                      {"minutes" in r ? (
+                        <DurationRing minutes={r.minutes} size={42} compact />
+                      ) : "days" in r ? (
+                        <DayBar days={r.days} />
+                      ) : (
+                        <span className="h-2 w-2 rounded-full bg-turquoise/50" />
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold leading-snug text-foreground">{r.name}</p>
+                      {"minutes" in r && (
+                        <p className="mt-0.5 text-sm text-muted-foreground">
+                          {r.minutes} minut
+                          {"note" in r && (
+                            <span className="ml-2 inline-block whitespace-nowrap rounded-full bg-turquoise/12 px-2 py-0.5 text-xs font-semibold text-turquoise">{r.note}</span>
+                          )}
+                        </p>
+                      )}
+                    </div>
+                    <p className="shrink-0 whitespace-nowrap text-right">
+                      <span className="text-2xl font-bold tracking-tight text-foreground">{fmtPrice(r.price)}</span>
+                      <span className="ml-1 text-sm font-semibold text-muted-foreground">Kč</span>
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="reveal-on-scroll mt-5 grid gap-6 rounded-3xl border border-border/80 bg-card/90 p-7 shadow-[0_18px_60px_-38px_rgba(77,58,41,0.45)] md:grid-cols-3 md:gap-8">
+        {priceNotes.map((n) => {
+          const Icon = n.icon;
+          return (
+            <div key={n.label} className="flex gap-4">
+              <Icon className="mt-0.5 h-5 w-5 shrink-0 text-turquoise" strokeWidth={1.7} />
+              <p className="text-sm leading-6 text-muted-foreground">
+                <span className="font-semibold text-foreground">{n.label}:</span> {n.text}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
+function ServicesSection() {
+  const byTitle = (t: string) => services.find((x) => x.title === t)!;
+  const first = byTitle("Vstupní konzultace");
+  const rest = ["Následující konzultace", "Individuální jídelníček", "Online konzultace", "Inbody 270"].map(byTitle);
+  return (
+    <>
+    <div className="reveal-on-scroll mx-auto mb-16 max-w-2xl text-center">
+      <h2 className="text-4xl font-medium leading-tight md:text-5xl">Služby</h2>
+      <p className="mt-5 text-muted-foreground">Vyberte si podporu podle toho, kde se na své cestě právě nacházíte.</p>
+    </div>
+
+    <div className="grid gap-8 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] xl:gap-12">
+      {/* levý sloupec */}
+      <div className="reveal-on-scroll lg:sticky lg:top-28 lg:self-start">
+        <div className="relative overflow-hidden rounded-3xl border border-turquoise/30 bg-gradient-to-br from-turquoise/20 via-turquoise/10 to-background p-7">
+          <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-turquoise/20 blur-2xl" />
+          <p className="relative text-sm font-semibold uppercase tracking-[0.18em] text-turquoise">Nevíte, kde začít?</p>
+          <p className="relative mt-3 text-lg font-semibold leading-snug text-foreground">
+            Začněte vstupní konzultací. Probereme vše potřebné a doporučím, co dál.
+          </p>
+          <div className="relative mt-6 flex flex-wrap gap-3">
+            <a
+              href="#kontakt"
+              className="rounded-full bg-turquoise px-6 py-3 text-sm font-semibold text-turquoise-foreground shadow-lg shadow-turquoise/20 transition hover:-translate-y-0.5"
+            >
+              Objednat se
+            </a>
+            <a
+              href="#cenik"
+              className="rounded-full border border-turquoise/40 bg-background/70 px-6 py-3 text-sm font-semibold text-turquoise transition hover:bg-turquoise/10"
+            >
+              Ceník
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* karty služeb */}
+      <div className="grid gap-5 sm:grid-cols-2">
+        <div className="reveal-on-scroll sm:col-span-2">
+          <ServiceCard s={first} featured />
+        </div>
+        {rest.map((s, i) => (
           <div
             key={s.title}
-            className={`reveal-on-scroll ${isCentered ? "sm:col-span-2 sm:flex sm:justify-center" : ""}`}
-            style={{ "--reveal-delay": `${Math.min(idx * 80, 240)}ms` } as React.CSSProperties}
+            className="reveal-on-scroll"
+            style={{ "--reveal-delay": `${(i % 2) * 90}ms` } as React.CSSProperties}
           >
-            <div
-              className={`relative overflow-hidden rounded-3xl border bg-card/90 shadow-[0_14px_45px_-32px_rgba(77,58,41,0.4)] transition-all duration-300 hover:-translate-y-1.5 hover:bg-card hover:shadow-[0_24px_60px_-20px_rgba(131,197,190,0.45)] ${
-                isActive
-                  ? "border-turquoise/50 shadow-[0_18px_50px_-24px_rgba(77,58,41,0.5)]"
-                  : "border-border/80 hover:border-turquoise/40"
-              } ${isCentered ? "w-full sm:w-[calc(50%-8px)]" : ""}`}
-            >
-              {/* Ambient card shimmer */}
-              <div
-                className="animate-card-shimmer pointer-events-none absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-white/15 to-transparent"
-                style={{ animationDelay: `${idx * 1.8}s` }}
-              />
-              {/* Card header — clickable toggle */}
-              <button
-                type="button"
-                className="flex w-full cursor-pointer items-center gap-4 p-5 text-left"
-                onClick={() => setActiveIdx((p) => (p === idx ? null : idx))}
-                aria-expanded={isActive}
-              >
-                <div
-                  className={`animate-float relative flex h-13 w-13 shrink-0 items-center justify-center overflow-hidden rounded-2xl transition-colors duration-300 ${isActive ? "bg-turquoise/25" : "bg-turquoise/12"}`}
-                  style={{ animationDelay: `${idx * 0.6}s` }}
-                >
-                  <div
-                    className="animate-card-shimmer absolute inset-y-0 w-full bg-gradient-to-r from-transparent via-white/50 to-transparent pointer-events-none"
-                    style={{ animationDelay: `${idx * 2}s` }}
-                  />
-                  <Icon className="relative z-10 h-6 w-6 text-turquoise" strokeWidth={1.6} />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h3 className={`text-lg font-bold leading-snug tracking-tight transition-colors duration-300 ${isActive ? "text-turquoise" : "text-foreground"}`}>{s.title}</h3>
-                </div>
-                <ChevronDown
-                  className={`h-4 w-4 shrink-0 transition-transform duration-300 ${isActive ? "rotate-180 text-turquoise" : "text-muted-foreground"}`}
-                />
-              </button>
-
-              {/* Accordion body — slides down on expand */}
-              <div
-                style={{
-                  maxHeight: isActive ? "700px" : "0px",
-                  overflow: "hidden",
-                  transition: "max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease",
-                  opacity: isActive ? 1 : 0,
-                }}
-              >
-                <div className="px-5 pb-6">
-                  <div className="mb-4 h-px bg-border/60" />
-                  {s.duration && (
-                    <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-turquoise/15 px-4 py-1.5 text-sm font-semibold text-turquoise">
-                      <Clock className="h-3.5 w-3.5" /> {s.duration}
-                    </p>
-                  )}
-                  {s.description && (
-                    <p className="mb-4 text-sm leading-7 text-muted-foreground">{s.description}</p>
-                  )}
-                  {s.items && s.items.length > 0 && (
-                    <ul className="mb-5 grid gap-2">
-                      {s.items.map((item) => (
-                        <li key={item} className="flex items-start gap-3 rounded-xl border border-border/60 bg-background/70 px-4 py-2.5 text-sm">
-                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-turquoise/20 text-turquoise">
-                            <Check className="h-3 w-3" />
-                          </span>
-                          <span className="leading-6 text-foreground">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  <a
-                    href="#kontakt"
-                    className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-turquoise to-turquoise/80 px-6 py-2.5 text-sm font-semibold text-turquoise-foreground shadow-md shadow-turquoise/20 transition-all duration-300 hover:scale-105 hover:shadow-lg"
-                  >
-                    Mám zájem
-                  </a>
-                </div>
-              </div>
-            </div>
+            <ServiceCard s={s} />
           </div>
-        );
-      })}
+        ))}
+      </div>
     </div>
+    </>
   );
 }
 
@@ -459,12 +659,6 @@ function HomePage() {
       {/* SERVICES & PRICING */}
       <section id="sluzby" className="relative bg-gradient-to-b from-secondary via-background to-secondary py-28 md:py-32">
         <div className="mx-auto max-w-screen-2xl px-4">
-          <div className="reveal-on-scroll mx-auto max-w-2xl text-center mb-16">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-turquoise"></p>
-            <h2 className="text-4xl font-medium leading-tight md:text-5xl">Služby</h2>
-            <p className="mt-5 text-muted-foreground">Vyberte si podporu podle toho, kde se na své cestě právě nacházíte.</p>
-          </div>
-
           <ServicesSection />
         </div>
       </section>
@@ -473,70 +667,10 @@ function HomePage() {
       <section id="cenik" className="bg-secondary py-28 md:py-32">
         <div className="mx-auto max-w-screen-2xl px-4">
           <div className="reveal-on-scroll mx-auto max-w-2xl text-center mb-16">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.22em] text-turquoise"></p>
             <h2 className="text-4xl font-medium leading-tight md:text-5xl">Ceník služeb</h2>
-            <p className="mt-5 text-muted-foreground"></p>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2">
-            {pricing.map((p, idx) => (
-              <div
-                key={p.title}
-                className="reveal-on-scroll price-card group relative overflow-hidden rounded-3xl border border-border/80 bg-card/90 p-7 shadow-[0_14px_45px_-32px_rgba(77,58,41,0.5)] transition-all duration-500 hover:-translate-y-1"
-                style={{ "--reveal-delay": `${Math.min(idx * 70, 280)}ms` } as React.CSSProperties}
-              >
-                <div className="absolute top-0 right-0 w-24 h-24 bg-turquoise/5 rounded-full blur-3xl group-hover:bg-turquoise/10 transition-colors duration-500"></div>
-                
-                <div className="relative">
-                  <h3 className="text-lg font-semibold text-foreground group-hover:text-turquoise transition-colors duration-300 pr-20">{p.title}</h3>
-                  
-                  {p.duration && (
-                    <p className="mt-2 text-sm text-muted-foreground">{p.duration}</p>
-                  )}
-                  
-                  <div className="mt-4 flex items-baseline gap-2">
-                    <span className="text-3xl font-bold text-turquoise">{p.price}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Additional Info */}
-          <div className="reveal-on-scroll mt-16 space-y-4 rounded-3xl border border-border/80 bg-card/90 p-8 shadow-[0_18px_60px_-38px_rgba(77,58,41,0.45)]">
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-turquoise/20">
-                  <span className="text-turquoise font-semibold">•</span>
-                </div>
-              </div>
-              <p className="text-foreground leading-relaxed">
-                <span className="font-semibold text-turquoise">Platba:</span> Pouze v hotovosti nebo přes QR kód
-              </p>
-            </div>
-            
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-turquoise/20">
-                  <span className="text-turquoise font-semibold">•</span>
-                </div>
-              </div>
-              <p className="text-foreground leading-relaxed">
-                <span className="font-semibold text-turquoise">Doklad:</span> Na poskytnuté služby vám bude vystavený přijímací doklad
-              </p>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-turquoise/20">
-                  <span className="text-turquoise font-semibold">•</span>
-                </div>
-              </div>
-              <p className="text-foreground leading-relaxed">
-                <span className="font-semibold text-turquoise">Pojišťovna:</span> Služby nutriční ambulance nejsou hrazeny zdravotní pojišťovnou. Některé služby splňující podmínky mohou být částečně proplaceny zdravotními pojišťovnami v rámci prevence.
-              </p>
-            </div>
-          </div>
+          <PriceList />
         </div>
       </section>
 
