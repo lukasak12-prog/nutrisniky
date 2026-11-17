@@ -333,6 +333,146 @@ function PriceList() {
   );
 }
 
+/* Vzorový jídelníček přímo z formuláře public/zaznam_stravy.docx */
+const sampleMeals = [
+  {
+    meal: "snídaně",
+    time: "7:30",
+    place: "doma",
+    foods: [
+      ["chléb kmínový", "1 krajíc"],
+      ["šunka |Amálka|", "2 plátky"],
+      ["sýr eidam |30 %|", "2 plátky"],
+      ["žervé |(Madeta)|", "10 g"],
+      ["paprika červená", "půlka"],
+    ],
+    drink: "zelený čaj |250 ml|",
+  },
+  {
+    meal: "přesnídávka",
+    time: "10:00",
+    place: "práce",
+    foods: [
+      ["jablko", "1 ks (100 g)"],
+      ["bílý jogurt |Klasik (Olma)|", "150 g"],
+    ],
+    drink: "voda |500 ml|",
+  },
+  {
+    meal: "oběd",
+    time: "12:30",
+    place: "práce",
+    foods: [
+      ["pečené filé na másle", "100 g"],
+      ["brambory", "150 g"],
+      ["okurka", "70 g"],
+    ],
+    drink: "voda |250 ml|",
+  },
+  {
+    meal: "večeře",
+    time: "18:30",
+    place: "Vietnamská restaurace (Gỗ Brno)",
+    foods: [["Bún bò Nam Bộ", "300 g"]],
+    drink: "Ovocný čaj |(Pickwick)| |250 ml|",
+  },
+];
+
+/** Text s |zvýrazněnými| částmi jako fixou. */
+function Marked({ text }: { text: string }) {
+  return (
+    <>
+      {text.split("|").map((part, i) =>
+        i % 2 ? (
+          <mark key={i} className="rounded-sm bg-transparent bg-[linear-gradient(transparent_55%,rgba(131,197,190,0.55)_55%)] px-0.5 text-foreground">
+            {part}
+          </mark>
+        ) : (
+          <span key={i}>{part}</span>
+        ),
+      )}
+    </>
+  );
+}
+
+function WeekStrip() {
+  const days = ["Po", "Út", "St", "Čt", "Pá", "So", "Ne"];
+  const picked = new Set([1, 3, 5]);
+  return (
+    <div className="mt-8 rounded-2xl border border-border/70 bg-card/80 p-5">
+      <div className="flex items-end gap-1.5">
+        {days.map((d, i) => (
+          <div key={d} className={`flex flex-1 flex-col items-center gap-1.5 ${i === 5 ? "ml-3" : ""}`}>
+            <span
+              className={`flex aspect-square w-full max-w-11 items-center justify-center rounded-xl text-xs font-bold ${
+                picked.has(i) ? "bg-turquoise text-turquoise-foreground shadow-md shadow-turquoise/25" : "bg-secondary text-muted-foreground/70"
+              }`}
+            >
+              {d}
+            </span>
+          </div>
+        ))}
+      </div>
+      <p className="mt-3 flex justify-between text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+        <span>2 všední dny</span>
+        <span>1 den o víkendu</span>
+      </p>
+    </div>
+  );
+}
+
+function FoodRecordSample() {
+  return (
+    <div className="relative">
+      {/* další dva listy pod vzorem = 3 dny záznamu */}
+      <div className="absolute inset-x-6 -bottom-3 top-6 rounded-3xl border border-border/60 bg-card/60" aria-hidden="true" />
+      <div className="absolute inset-x-3 -bottom-1.5 top-3 rounded-3xl border border-border/70 bg-card/80" aria-hidden="true" />
+
+      <div className="relative overflow-hidden rounded-3xl border border-border/80 bg-card shadow-[0_30px_70px_-40px_rgba(77,58,41,0.55)]">
+        <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-border/70 px-6 py-5 sm:px-8">
+          <p className="font-bold text-foreground">Záznam stravy – 3 dny</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-turquoise">Příklad: vzorový jídelníček</p>
+        </div>
+
+        {/* hlavička sloupců (jen na širších obrazovkách) */}
+        <div className="hidden grid-cols-[7.5rem_1fr_6.5rem_9rem] gap-4 border-b border-dashed border-border px-8 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground md:grid">
+          <span>Čas · místo</span>
+          <span>Seznam potravin</span>
+          <span>Množství</span>
+          <span>Nápoje</span>
+        </div>
+
+        <div className="relative max-h-[36rem] overflow-hidden">
+          {sampleMeals.map((m) => (
+            <div key={m.meal} className="grid gap-3 border-b border-dashed border-border px-6 py-5 last:border-0 sm:px-8 md:grid-cols-[7.5rem_1fr_6.5rem_9rem] md:gap-4">
+              <div>
+                <p className="font-bold capitalize text-foreground">{m.meal}</p>
+                <p className="text-sm tabular-nums text-muted-foreground">
+                  {m.time} · {m.place}
+                </p>
+              </div>
+              <ul className="space-y-1 text-sm md:col-span-2">
+                {m.foods.map(([food, qty]) => (
+                  <li key={food} className="grid grid-cols-[1fr_auto] gap-4 md:grid-cols-[1fr_6.5rem]">
+                    <span className="text-foreground/85">
+                      <Marked text={food} />
+                    </span>
+                    <span className="font-semibold tabular-nums text-foreground">{qty}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-sm text-foreground/85">
+                <Marked text={m.drink} />
+              </p>
+            </div>
+          ))}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-card to-transparent" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ServicesSection() {
   const byTitle = (t: string) => services.find((x) => x.title === t)!;
   const first = byTitle("Vstupní konzultace");
@@ -678,9 +818,9 @@ function HomePage() {
       <VouchersTeaser />
 
       {/* ZAZNAM STRAVY */}
-      <section className="bg-background py-20 md:py-24">
-        <div className="mx-auto max-w-screen-2xl px-4">
-          <div className="reveal-on-scroll mx-auto max-w-3xl rounded-3xl border border-border/80 bg-card/90 p-8 shadow-[0_18px_60px_-38px_rgba(77,58,41,0.45)] md:p-10">
+      <section id="zaznam-stravy" className="bg-background py-24 md:py-28">
+        <div className="mx-auto grid max-w-screen-2xl items-center gap-12 px-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] xl:gap-20">
+          <div className="reveal-on-scroll">
             <div className="mb-6 flex items-center gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-turquoise/15 text-turquoise">
                 <UtensilsCrossed className="h-5 w-5" />
@@ -703,6 +843,8 @@ function HomePage() {
               </p>
             </div>
 
+            <WeekStrip />
+
             <div className="mt-8">
               <a
                 href="/zaznam_stravy.docx"
@@ -713,6 +855,10 @@ function HomePage() {
                 Stáhnout záznam stravy (.docx)
               </a>
             </div>
+          </div>
+
+          <div className="reveal-on-scroll" style={{ "--reveal-delay": "120ms" } as React.CSSProperties}>
+            <FoodRecordSample />
           </div>
         </div>
       </section>
