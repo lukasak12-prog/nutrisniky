@@ -1,0 +1,5 @@
+# QR kódy byly dřív na /poukazy/qr-*.png. Starší e-maily s objednávkou je načítají
+# z této adresy, proto ji obsluhujeme dál (200 = rovnou vrátí obrázek, bez přesměrování).
+/poukazy/qr-350.png   /platba/qr-350.png   200
+/poukazy/qr-1000.png  /platba/qr-1000.png  200
+/poukazy/qr-3000.png  /platba/qr-3000.png  200
