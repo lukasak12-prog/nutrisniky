@@ -1,7 +1,10 @@
 import { Layout } from "@/components/Layout";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import { VouchersTeaser } from "@/components/VouchersTeaser";
-import heroImg from "@/assets/nikca web.png";
+import heroImg from "@/assets/hero-1920.jpg";
+import heroImgSmall from "@/assets/hero-960.jpg";
+
+const heroSrcSet = `${heroImgSmall} 960w, ${heroImg} 1920w`;
 import portrait from "@/assets/portrait-optimized.jpg";
 import avatar from "@/assets/avatar2.jpg";
 import {
@@ -246,6 +249,10 @@ function HeroMobilePhoto({ src }: { src: string }) {
       <img
         ref={imgRef}
         src={src}
+        srcSet={heroSrcSet}
+        sizes="100vw"
+        width={1920}
+        height={1197}
         alt="Nutriční terapeutka Nicola Zounková"
         className="h-[115%] w-full object-cover object-[80%_top] animate-fade-in-up"
         style={{ marginTop: '-15px', willChange: 'transform' }}
@@ -312,9 +319,12 @@ function HomePage() {
         <div className="relative isolate hidden min-h-[88vh] md:block">
           <img
             src={heroImg}
-            alt="Nutriční terapeutka v moderní kuchyni"
+            srcSet={heroSrcSet}
+            sizes="100vw"
+            alt="Mgr. Nicola Zounková, nutriční terapeutka v Tišnově"
             width={1920}
-            height={1080}
+            height={1197}
+            fetchPriority="high"
             className="absolute inset-0 h-full w-full object-cover object-[70%_18%] animate-hero-zoom"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/35 to-transparent" />
@@ -329,9 +339,6 @@ function HomePage() {
                   <h1 className="text-5xl font-semibold leading-[1.02] tracking-[-0.055em] text-white animate-fade-in-up sm:text-6xl md:text-7xl lg:text-8xl" style={{ animationDelay: '0.2s' }}>
                     Nutriční terapeut
                   </h1>
-                  <h2 className="text-5xl font-semibold leading-[1.02] tracking-[-0.055em] text-white animate-fade-in-up sm:text-6xl md:text-7xl lg:text-8xl" style={{ animationDelay: '0.3s' }}>
-                    
-                  </h2>
                   <div className="mt-4 h-1 w-16 rounded-full bg-gradient-to-r from-turquoise to-turquoise/50 animate-fade-in" style={{ animationDelay: '0.4s' }} />
                   <p className="mt-6 text-2xl font-medium text-white/95 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
                     Mgr. Nicola Zounková
@@ -597,7 +604,7 @@ function HomePage() {
             <div className="absolute -inset-4 rounded-[2rem] bg-turquoise/15 blur-2xl" />
             <img
               src={portrait}
-              alt="Adéla Durčáková"
+              alt="Mgr. Nicola Zounková, nutriční terapeutka"
               width={800}
               height={800}
               className="relative aspect-square w-full rounded-[2rem] border border-white/50 object-cover shadow-[0_30px_80px_-45px_rgba(77,58,41,0.7)]"
@@ -643,8 +650,8 @@ function HomePage() {
                   </div>
                 </div>
                 <p className="flex items-center gap-3 text-sm"><MapPin className="h-4 w-4 text-turquoise" /> nám. Míru 24, 666 01 Tišnov 1 / Online</p>
-                <p className="flex items-center gap-3 text-sm"><Phone className="h-4 w-4 text-turquoise" /> +420 722 671 187</p>
-                <p className="flex items-center gap-3 text-sm"><Mail className="h-4 w-4 text-turquoise" /> nutrisniky@seznam.cz</p>
+                <a href="tel:+420722671187" className="flex items-center gap-3 text-sm transition hover:text-turquoise"><Phone className="h-4 w-4 text-turquoise" /> +420 722 671 187</a>
+                <a href="mailto:nutrisniky@seznam.cz" className="flex items-center gap-3 text-sm transition hover:text-turquoise"><Mail className="h-4 w-4 text-turquoise" /> nutrisniky@seznam.cz</a>
                 <div className="relative overflow-hidden rounded-2xl border border-turquoise/30 bg-gradient-to-br from-turquoise/20 via-turquoise/10 to-background p-5">
                   <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-turquoise/20 blur-2xl" />
                   <div className="relative flex items-start gap-4">
@@ -663,6 +670,7 @@ function HomePage() {
               {/* Google Maps */}
               <div className="overflow-hidden rounded-3xl border border-border/80 shadow-[0_18px_60px_-38px_rgba(77,58,41,0.45)]">
                 <iframe
+                  title="Mapa – Nutrisniky, nám. Míru 24, Tišnov"
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2558.5144188621166!2d16.421451576444987!3d49.349768271402944!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471285004e2b401b%3A0xafbed84e21c2c6ba!2sAmbulance%20nutri%C4%8Dn%C3%ADho%20terapeuta%20-%20Nutrisniky!5e1!3m2!1scs!2scz!4v1778364808322!5m2!1scs!2scz"
                   width="100%"
                   height={300}
@@ -799,8 +807,9 @@ function ContactForm() {
       <Field name="email" label="Email" type="email" required />
       <Field name="phone" label="Telefon" type="tel" />
       <div>
-        <label className="mb-2 block text-sm text-muted-foreground">Zpráva</label>
+        <label htmlFor="contact-message" className="mb-2 block text-sm text-muted-foreground">Zpráva</label>
         <textarea
+          id="contact-message"
           name="message"
           rows={5}
           maxLength={1000}
@@ -833,10 +842,11 @@ function ContactForm() {
 function Field({ name, label, type = "text", required }: { name: string; label: string; type?: string; required?: boolean }) {
   return (
     <div>
-      <label className="mb-2 block text-sm text-muted-foreground">
+      <label htmlFor={`contact-${name}`} className="mb-2 block text-sm text-muted-foreground">
         {label} {required && <span className="text-destructive">*</span>}
       </label>
       <input
+        id={`contact-${name}`}
         name={name}
         type={type}
         required={required}

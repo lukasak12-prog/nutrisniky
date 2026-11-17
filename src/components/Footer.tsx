@@ -5,7 +5,7 @@ export function Footer() {
     <footer className="bg-brown text-brown-foreground">
       <div className="mx-auto grid max-w-screen-2xl gap-10 px-4 py-16 md:grid-cols-3">
         <div className="space-y-3 text-sm">
-          <a href="tel:+420723166886" className="flex items-center gap-2 text-brown-foreground/90 transition hover:text-brown-foreground">
+          <a href="tel:+420722671187" className="flex items-center gap-2 text-brown-foreground/90 transition hover:text-brown-foreground">
             <Phone className="h-4 w-4" /> +420 722 671 187
           </a>
           <a href="mailto:nutrisniky@seznam.cz" className="flex items-center gap-2 text-brown-foreground/90 transition hover:text-brown-foreground">
@@ -32,7 +32,7 @@ export function Footer() {
           <a href="/poukazy" className="block underline-offset-4 transition hover:text-turquoise hover:underline">Dárkové poukazy</a>
         </div>
       </div>
-      <div className="border-t border-brown-foreground/15 py-5 text-center text-xs text-brown-foreground/70">
+      <div className="border-t border-brown-foreground/15 py-5 text-center text-xs text-brown-foreground/90">
         © {new Date().getFullYear()} Nutrisniky · Vyrobeno s láskou
       </div>
     </footer>

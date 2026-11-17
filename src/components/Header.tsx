@@ -56,7 +56,7 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
         </nav>
 
         <div className={`hidden items-center gap-5 lg:flex ${textColor}`}>
-          <a href="tel:+420723166886" className="flex items-center gap-2 text-sm">
+          <a href="tel:+420722671187" className="flex items-center gap-2 text-sm">
             <Phone className="h-4 w-4" /> +420 722 671 187
           </a>
           <div className="flex items-center gap-2">
@@ -120,7 +120,7 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
                 <Instagram className="h-4 w-4" /> Instagram
               </a>
               <a
-                href="https://www.facebook.com/nutrisniky"
+                href="https://www.facebook.com/profile.php?id=61568124151775"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium hover:bg-turquoise/10"

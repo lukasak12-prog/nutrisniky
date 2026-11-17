@@ -1,4 +1,6 @@
+# Web je otevřený vyhledávačům i AI asistentům (vyhledávání, odpovědi i trénink).
 User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
 Allow: /
 
 Sitemap: https://nutrisniky.cz/sitemap.xml

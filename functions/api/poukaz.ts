@@ -1,6 +1,6 @@
 // Cloudflare Pages Function: POST /api/poukaz
 // 1) pošle Nikole e-mail s objednávkou poukazu (odpovědí se dostane rovnou k zákazníkovi)
-// 2) pošle zákazníkovi poděkování a QR kód k platbě (hotový obrázek z public/poukazy/)
+// 2) pošle zákazníkovi poděkování a QR kód k platbě (hotový obrázek z public/platba/)
 // Platbu Nikola zkontroluje na účtu a poukaz pošle ručně.
 //
 // Proměnné prostředí (Cloudflare Pages → Settings → Variables and Secrets):

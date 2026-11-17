@@ -4,12 +4,20 @@ import App from "./App";
 import VouchersPage from "./VouchersPage";
 import "./styles.css";
 
-// Jednoduché rozlišení stránek podle adresy (Cloudflare Pages vrací index.html pro všechny cesty).
-const path = window.location.pathname.replace(/\/+$/, "");
+// Jednoduché rozlišení stránek podle adresy.
+const path = window.location.pathname.replace(/\/+$/, "").replace(/\.html$/, "");
 const Page = path === "/poukazy" ? VouchersPage : App;
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+const rootEl = document.getElementById("root")!;
+const app = (
   <React.StrictMode>
     <Page />
   </React.StrictMode>
 );
+
+// Na produkci je HTML předgenerované (scripts/prerender.mjs) → jen ho „oživíme“.
+if (rootEl.hasChildNodes()) {
+  ReactDOM.hydrateRoot(rootEl, app);
+} else {
+  ReactDOM.createRoot(rootEl).render(app);
+}
