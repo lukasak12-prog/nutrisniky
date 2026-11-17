@@ -316,7 +316,7 @@ function HomePage() {
         </div>
 
         {/* ━━━ DESKTOP layout (≥ md) — original overlay unchanged ━━━ */}
-        <div className="relative isolate hidden min-h-[88vh] md:block">
+        <div className="relative isolate hidden min-h-svh md:block">
           <img
             src={heroImg}
             srcSet={heroSrcSet}
@@ -328,7 +328,7 @@ function HomePage() {
             className="absolute inset-0 h-full w-full object-cover object-[70%_18%] animate-hero-zoom"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/35 to-transparent" />
-          <div className="relative z-10 mx-auto flex min-h-[88vh] max-w-screen-2xl items-center px-4 pt-32 pb-20">
+          <div className="relative z-10 mx-auto flex min-h-svh max-w-screen-2xl items-center px-4 pt-32 pb-20">
             <div className="max-w-2xl">
               <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-xs uppercase tracking-[0.2em] text-white backdrop-blur animate-fade-in" style={{ animationDelay: '0.1s' }}>
                 <Sparkles className="h-3.5 w-3.5" /> Tišnov · Online
