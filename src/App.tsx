@@ -1,5 +1,6 @@
 import { Layout } from "@/components/Layout";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
+import { VouchersTeaser } from "@/components/VouchersTeaser";
 import heroImg from "@/assets/nikca web.png";
 import portrait from "@/assets/portrait-optimized.jpg";
 import avatar from "@/assets/avatar2.jpg";
@@ -531,6 +532,9 @@ function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* DÁRKOVÉ POUKAZY — upoutávka na /poukazy */}
+      <VouchersTeaser />
 
       {/* ZAZNAM STRAVY */}
       <section className="bg-background py-20 md:py-24">
