@@ -3,10 +3,11 @@ import logoImg from "@/assets/nutrisniky2.png";
 import { useState, useEffect } from "react";
 
 const nav = [
-  { href: "#sluzby", label: "Služby" },
-  { href: "#cenik", label: "Ceník" },
-  { href: "#o-mne", label: "O mně" },
-  { href: "#kontakt", label: "Kontakt" },
+  { href: "/#sluzby", label: "Služby" },
+  { href: "/#cenik", label: "Ceník" },
+  { href: "/#o-mne", label: "O mně" },
+  { href: "/poukazy", label: "Poukazy" },
+  { href: "/#kontakt", label: "Kontakt" },
 ] as const;
 
 export function Header({ transparent = false }: { transparent?: boolean }) {
@@ -42,7 +43,7 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
         </a>
 
         <nav className={`hidden items-center gap-8 lg:flex ${textColor}`}>
-          <a href="#hero" className="text-sm font-medium transition hover:text-turquoise">Domů</a>
+          <a href="/#hero" className="text-sm font-medium transition hover:text-turquoise">Domů</a>
           {nav.map((item) => (
             <a
               key={item.href}
@@ -79,7 +80,7 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
             </a>
           </div>
           <a
-            href="#kontakt"
+            href="/#kontakt"
             className="rounded-full bg-turquoise px-5 py-2.5 text-sm font-semibold text-turquoise-foreground shadow-lg shadow-turquoise/20 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-turquoise/25"
           >
             Napište mi zprávu
@@ -98,7 +99,7 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
       {open && (
         <div className="border-t border-border/70 bg-background/95 shadow-xl backdrop-blur-xl lg:hidden">
           <div className="mx-auto flex max-w-screen-2xl flex-col gap-3 px-4 py-5 text-foreground">
-            <a href="#hero" onClick={() => setOpen(false)} className="rounded-xl px-3 py-2 text-sm font-medium hover:bg-turquoise/10">Domů</a>
+            <a href="/#hero" onClick={() => setOpen(false)} className="rounded-xl px-3 py-2 text-sm font-medium hover:bg-turquoise/10">Domů</a>
             {nav.map((item) => (
               <a
                 key={item.href}
@@ -128,7 +129,7 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
               </a>
             </div>
             <a
-              href="#kontakt"
+              href="/#kontakt"
               onClick={() => setOpen(false)}
               className="mt-2 rounded-full bg-turquoise px-5 py-2.5 text-center text-sm font-medium text-turquoise-foreground"
             >

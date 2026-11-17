@@ -26,9 +26,10 @@ export function Footer() {
         </div>
 
         <div className="space-y-2 text-sm font-semibold">
-          <a href="#sluzby" className="block underline-offset-4 transition hover:text-turquoise hover:underline">Jídelníček na míru</a>
-          <a href="#sluzby" className="block underline-offset-4 transition hover:text-turquoise hover:underline">Nutriční poradenství Tišnov</a>
-          <a href="#kontakt" className="block underline-offset-4 transition hover:text-turquoise hover:underline">Konzultace</a>
+          <a href="/#sluzby" className="block underline-offset-4 transition hover:text-turquoise hover:underline">Jídelníček na míru</a>
+          <a href="/#sluzby" className="block underline-offset-4 transition hover:text-turquoise hover:underline">Nutriční poradenství Tišnov</a>
+          <a href="/#kontakt" className="block underline-offset-4 transition hover:text-turquoise hover:underline">Konzultace</a>
+          <a href="/poukazy" className="block underline-offset-4 transition hover:text-turquoise hover:underline">Dárkové poukazy</a>
         </div>
       </div>
       <div className="border-t border-brown-foreground/15 py-5 text-center text-xs text-brown-foreground/70">

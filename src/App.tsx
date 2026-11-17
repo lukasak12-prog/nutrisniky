@@ -1,4 +1,5 @@
 import { Layout } from "@/components/Layout";
+import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
 import heroImg from "@/assets/nikca web.png";
 import portrait from "@/assets/portrait-optimized.jpg";
 import avatar from "@/assets/avatar2.jpg";
@@ -254,6 +255,7 @@ function HeroMobilePhoto({ src }: { src: string }) {
 
 function HomePage() {
   useRevealOnScroll();
+  useScrollToHash();
 
   return (
     <Layout transparentHeader>
@@ -729,25 +731,19 @@ function AboutItem({ icon, title, text }: { icon: React.ReactNode; title: string
   );
 }
 
-function useRevealOnScroll() {
+// Při příchodu z jiné stránky (např. /poukazy → /#kontakt) dojet na správnou sekci.
+function useScrollToHash() {
   useEffect(() => {
-    const elements = document.querySelectorAll<HTMLElement>(".reveal-on-scroll");
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { rootMargin: "0px 0px -10% 0px", threshold: 0.12 },
-    );
-
-    elements.forEach((element) => observer.observe(element));
-
-    return () => observer.disconnect();
+    const id = decodeURIComponent(window.location.hash.slice(1));
+    if (!id) return;
+    const go = () => document.getElementById(id)?.scrollIntoView({ behavior: "instant" as ScrollBehavior });
+    const t = window.setTimeout(go, 100);
+    // obrázky se dotahují a posouvají stránku — po načtení ještě jednou dorovnat
+    window.addEventListener("load", go, { once: true });
+    return () => {
+      window.clearTimeout(t);
+      window.removeEventListener("load", go);
+    };
   }, []);
 }
 
