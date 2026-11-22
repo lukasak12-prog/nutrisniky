@@ -1,5 +1,6 @@
 import { Layout } from "@/components/Layout";
 import { useRevealOnScroll } from "@/hooks/use-reveal-on-scroll";
+import { track } from "@/lib/analytics";
 import { VouchersTeaser } from "@/components/VouchersTeaser";
 import heroImg from "@/assets/hero-1920.jpg";
 import heroImgSmall from "@/assets/hero-960.jpg";
@@ -1070,6 +1071,7 @@ function ContactForm() {
       if (res.ok) {
         form.reset();
         setSent(true);
+        track("generate_lead", { form: "kontakt" });
       } else {
         const data = await res.json().catch(() => ({}));
         setError(data?.errors?.[0]?.message ?? "Nepodařilo se odeslat zprávu. Zkuste to prosím znovu.");

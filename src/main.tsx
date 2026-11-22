@@ -3,6 +3,9 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import VouchersPage from "./VouchersPage";
 import "./styles.css";
+import { initAnalytics } from "./lib/analytics";
+
+initAnalytics();
 
 // Jednoduché rozlišení stránek podle adresy.
 const path = window.location.pathname.replace(/\/+$/, "").replace(/\.html$/, "");

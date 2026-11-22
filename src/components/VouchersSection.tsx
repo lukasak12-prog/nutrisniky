@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Check, Gift, QrCode, RotateCw, Send, ShoppingBag } from "lucide-react";
 import { vouchers, formatCzk, type Voucher } from "@/data/vouchers";
+import { track } from "@/lib/analytics";
 import img350 from "@/assets/poukazy/poukaz-350.png";
 import img1000 from "@/assets/poukazy/poukaz-1000.png";
 import img3000 from "@/assets/poukazy/poukaz-3000.png";
@@ -116,6 +117,7 @@ export function VouchersSection() {
       }
       form.reset();
       setResult({ voucher: selected, email, emailSent: data.emailSent !== false });
+      track("voucher_order", { value: selected.price, currency: "CZK", voucher: selected.title });
     } catch {
       setError("Objednávku se nepodařilo odeslat. Zkontrolujte připojení k internetu.");
     } finally {

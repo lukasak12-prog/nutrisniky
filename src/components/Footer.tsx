@@ -1,4 +1,5 @@
 import { Phone, Mail, MapPin, BadgeCheck } from "lucide-react";
+import { OPEN_COOKIE_SETTINGS } from "@/lib/analytics";
 
 export function Footer() {
   return (
@@ -23,6 +24,13 @@ export function Footer() {
           <a href="#" className="block underline-offset-4 transition hover:text-brown-foreground hover:underline">Zásady ochrany osobních údajů</a>
           <a href="#" className="block underline-offset-4 transition hover:text-brown-foreground hover:underline">Obchodní podmínky</a>
           <a href="#" className="block underline-offset-4 transition hover:text-brown-foreground hover:underline">Rušení a přesouvání termínů</a>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event(OPEN_COOKIE_SETTINGS))}
+            className="block underline-offset-4 transition hover:text-brown-foreground hover:underline"
+          >
+            Nastavení cookies
+          </button>
         </div>
 
         <div className="space-y-2 text-sm font-semibold">
