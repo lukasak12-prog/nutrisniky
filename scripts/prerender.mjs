@@ -30,7 +30,8 @@ for (const page of pages) {
     .replace(/<meta name="description"[^>]*>\s*/, "")
     .replace(/<link rel="canonical"[^>]*>\s*/, "")
     .replace("</head>", `  ${headTags(page)}\n  </head>`)
-    .replace('<div id="root"></div>', `<div id="root">${appHtml}</div>`);
+    // email_off: Cloudflare jinak přepíše e-maily na „[email protected]“ a HTML nesedí s tím, co čeká React
+    .replace('<div id="root"></div>', () => `<!--email_off--><div id="root">${appHtml}</div><!--/email_off-->`);
   if (!html.includes(appHtml)) throw new Error(`Prerender: chybí #root v šabloně (${page.path})`);
   await fs.writeFile(path.join(dist, page.file), html);
   console.log(`prerender: ${page.path} → dist/${page.file} (${Math.round(html.length / 1024)} kB)`);
