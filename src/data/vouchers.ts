@@ -39,6 +39,9 @@ export const vouchers: Voucher[] = [
   },
 ];
 
+/** Poslední den objednávek, které se stihnou poslat do Vánoc, např. "2026-12-20". Dokud je null, na webu se nic neukazuje. */
+export const christmasOrderBy: string | null = null;
+
 export function formatCzk(amount: number) {
   return `${new Intl.NumberFormat("cs-CZ").format(amount)} Kč`;
 }

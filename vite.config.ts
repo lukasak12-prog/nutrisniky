@@ -1,4 +1,4 @@
-﻿import { defineConfig, type Plugin } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
@@ -10,6 +10,16 @@ function mockVoucherApi(): Plugin {
     name: "mock-voucher-api",
     apply: "serve",
     configureServer(server) {
+      server.middlewares.use("/api/kontakt", (req, res) => {
+        req.resume();
+        res.setHeader("content-type", "application/json");
+        res.end(JSON.stringify({ ok: true }));
+      });
+      server.middlewares.use("/api/odstoupeni", (req, res) => {
+        req.resume();
+        res.setHeader("content-type", "application/json");
+        res.end(JSON.stringify({ ok: true, emailSent: true, sentAt: "23. listopadu 2026 v 12:00:00" }));
+      });
       server.middlewares.use("/api/poukaz", (req, res) => {
         let raw = "";
         req.on("data", (c) => (raw += c));

@@ -71,6 +71,27 @@ export const pages: PageSeo[] = [
       "Darujte péči o zdraví: dárkový poukaz na vstupní konzultaci, měření na InBody nebo jídelníček na míru od nutriční terapeutky v Tišnově. Od 350 Kč, platba QR kódem.",
     image: "/og/og-poukazy.jpg",
   },
+  {
+    path: "/obchodni-podminky",
+    file: "obchodni-podminky.html",
+    title: "Obchodní podmínky | Nutrisniky",
+    description: "Obchodní podmínky pro nákup dárkových poukazů na nutrisniky.cz.",
+    image: "/og/og-poukazy.jpg",
+  },
+  {
+    path: "/ochrana-osobnich-udaju",
+    file: "ochrana-osobnich-udaju.html",
+    title: "Zásady ochrany osobních údajů | Nutrisniky",
+    description: "Jaké osobní údaje web nutrisniky.cz zpracovává, proč a jaká máte práva.",
+    image: "/og/og-home.jpg",
+  },
+  {
+    path: "/odstoupeni-od-smlouvy",
+    file: "odstoupeni-od-smlouvy.html",
+    title: "Odstoupení od smlouvy | Nutrisniky",
+    description: "On-line odstoupení od smlouvy na dárkový poukaz Nutrisniky.",
+    image: "/og/og-poukazy.jpg",
+  },
 ];
 
 export function pageByPath(path: string) {

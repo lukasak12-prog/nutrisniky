@@ -1063,18 +1063,18 @@ function ContactForm() {
     setError(null);
     setSubmitting(true);
     try {
-      const res = await fetch("https://formspree.io/f/xzdonvvg", {
+      const res = await fetch("/api/kontakt", {
         method: "POST",
-        body: fd,
-        headers: { Accept: "application/json" },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ ...result.data, company: fd.get("company") }),
       });
-      if (res.ok) {
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.ok) {
         form.reset();
         setSent(true);
         track("generate_lead", { form: "kontakt" });
       } else {
-        const data = await res.json().catch(() => ({}));
-        setError(data?.errors?.[0]?.message ?? "Nepodařilo se odeslat zprávu. Zkuste to prosím znovu.");
+        setError(data.error ?? "Nepodařilo se odeslat zprávu. Zkuste to prosím znovu.");
       }
     } catch {
       setError("Nepodařilo se odeslat zprávu. Zkontrolujte připojení k internetu.");
@@ -1088,6 +1088,8 @@ function ContactForm() {
       <Field name="name" label="Jméno a příjmení" required />
       <Field name="email" label="Email" type="email" required />
       <Field name="phone" label="Telefon" type="tel" />
+      {/* honeypot */}
+      <input type="text" name="company" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
       <div>
         <label htmlFor="contact-message" className="mb-2 block text-sm text-muted-foreground">Zpráva</label>
         <textarea
@@ -1117,6 +1119,10 @@ function ContactForm() {
           {submitting ? "Odesílám…" : "Odeslat zprávu"}
         </button>
       )}
+      <p className="text-center text-xs text-muted-foreground">
+        Jak nakládám s údaji, popisují{" "}
+        <a href="/ochrana-osobnich-udaju" target="_blank" rel="noopener" className="underline underline-offset-2">zásady ochrany osobních údajů</a>.
+      </p>
     </form>
   );
 }

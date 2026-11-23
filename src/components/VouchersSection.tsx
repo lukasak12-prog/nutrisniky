@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, Gift, QrCode, RotateCw, Send, ShoppingBag } from "lucide-react";
-import { vouchers, formatCzk, type Voucher } from "@/data/vouchers";
+import { christmasOrderBy, vouchers, formatCzk, type Voucher } from "@/data/vouchers";
 import { track } from "@/lib/analytics";
 import img350 from "@/assets/poukazy/poukaz-350.png";
 import img1000 from "@/assets/poukazy/poukaz-1000.png";
@@ -312,16 +312,30 @@ export function VouchersSection() {
                   <p className="rounded-2xl bg-destructive/10 px-5 py-3 text-center text-sm font-medium text-destructive">{error}</p>
                 )}
 
+                {/* zákon chce obsah a cenu bezprostředně před tlačítkem */}
+                <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-y-2 border-brown/25 py-4">
+                  <p className="text-sm text-foreground">
+                    Dárkový poukaz: <strong>{selected.items.map((i) => `${i.title} (${i.subtitle})`).join(" + ")}</strong>
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Celkem <strong className="ml-1 text-xl text-foreground">{formatCzk(selected.price)}</strong>
+                  </p>
+                </div>
+                <ChristmasNote />
+
                 <button
                   type="submit"
                   disabled={submitting}
                   className="flex w-full items-center justify-center gap-2 rounded-full bg-brown px-8 py-3.5 text-sm font-semibold text-brown-foreground shadow-lg shadow-brown/20 transition hover:-translate-y-0.5 hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <Send className="h-4 w-4" />
-                  {submitting ? "Odesílám…" : `Objednat poukaz za ${formatCzk(selected.price)}`}
+                  {submitting ? "Odesílám…" : "Objednávka zavazující k platbě"}
                 </button>
-                <p className="text-center text-xs text-muted-foreground">
-                  Po odeslání vám na e-mail přijde QR kód k platbě.
+                <p className="text-center text-xs leading-5 text-muted-foreground">
+                  Po odeslání vám na e-mail přijde QR kód k platbě. Pro nákup platí{" "}
+                  <a href="/obchodni-podminky" target="_blank" rel="noopener" className="underline underline-offset-2">obchodní podmínky</a> včetně
+                  práva odstoupit do 14 dnů. Jak nakládám s údaji, popisují{" "}
+                  <a href="/ochrana-osobnich-udaju" target="_blank" rel="noopener" className="underline underline-offset-2">zásady ochrany osobních údajů</a>.
                 </p>
               </form>
             )}
@@ -330,6 +344,18 @@ export function VouchersSection() {
       </div>
     </section>
   );
+}
+
+/** Termín se vykreslí až v prohlížeči, protože závisí na dnešním datu. */
+function ChristmasNote() {
+  const [text, setText] = useState<string | null>(null);
+  useEffect(() => {
+    if (!christmasOrderBy) return;
+    const end = new Date(`${christmasOrderBy}T23:59:59`);
+    if (Date.now() <= end.getTime()) setText(end.toLocaleDateString("cs-CZ", { day: "numeric", month: "long" }));
+  }, []);
+  if (!text) return null;
+  return <p className="text-center text-sm font-semibold text-foreground">Aby poukaz dorazil do Vánoc, objednejte a zaplaťte do {text}.</p>;
 }
 
 function OrderSuccess({ result, onReset }: { result: OrderResult; onReset: () => void }) {

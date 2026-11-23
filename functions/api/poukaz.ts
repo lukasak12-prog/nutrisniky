@@ -9,43 +9,18 @@
 //   CONTACT_FROM_EMAIL  – odesílatel na ověřené doméně v Resend, např. "Nutrisniky <poukazy@nutrisniky.cz>"
 
 import { vouchers, formatCzk } from "../../src/data/vouchers";
+import { plain, seller, terms, VOUCHER_VALIDITY, withdrawalForm, WITHDRAWAL_URL } from "../../src/data/legal";
+import { addresses, esc, isEmail, json, row, sendEmail, shell, str, type Env } from "../../src/server/email";
 
-interface Env {
-  RESEND_API_KEY?: string;
-  CONTACT_TO_EMAIL?: string;
-  CONTACT_FROM_EMAIL?: string;
-}
+const p = (text: string) => `<p style="margin:0 0 8px;font-size:12px;line-height:1.6">${esc(plain(text))}</p>`;
 
-const json = (data: unknown, status = 200) =>
-  new Response(JSON.stringify(data), {
-    status,
-    headers: { "content-type": "application/json; charset=utf-8" },
-  });
-
-const str = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
-
-const esc = (s: string) =>
-  s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
-
-async function sendEmail(env: Env, payload: Record<string, unknown>) {
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) throw new Error(`Resend ${res.status}: ${await res.text()}`);
-}
-
-const row = (label: string, value: string) =>
-  `<tr><td style="padding:6px 16px 6px 0;color:#7a5a43;font-size:13px;white-space:nowrap;vertical-align:top">${label}</td><td style="padding:6px 0;color:#33261b;font-size:15px;font-weight:600">${value}</td></tr>`;
-
-const shell = (inner: string) => `<!doctype html><html lang="cs"><body style="margin:0;background:#f4eee6;padding:24px 12px;font-family:Arial,Helvetica,sans-serif;color:#33261b">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#faf6ef;border-radius:20px;overflow:hidden">
-<tr><td style="padding:32px 32px 8px"><p style="margin:0;letter-spacing:3px;font-size:12px;font-weight:700;color:#7a5a43">DÁRKOVÝ POUKAZ · NUTRISNIKY</p></td></tr>
-<tr><td style="padding:8px 32px 32px">${inner}</td></tr>
-<tr><td style="padding:20px 32px;background:#e9ddd2;font-size:12px;color:#7a5a43;line-height:1.6">Nutrisniky · Mgr. Nicola Zounková · Poliklinika Tišnov, nám. Míru 24, 666 01 Tišnov<br>722 671 187 · nutrisniky@seznam.cz · www.nutrisniky.cz</td></tr>
-</table></td></tr></table></body></html>`;
+/** Celé podmínky v textu e-mailu: zákon chce smlouvu a podmínky v textové podobě, odkaz nestačí. */
+const termsHtml = () => `
+  <h2 style="margin:32px 0 8px;padding-top:24px;border-top:1px solid #d8c7b8;font-size:17px">Obchodní podmínky</h2>
+  ${p(seller.map(([k, val]) => `${k}: ${val}`).join(" · "))}
+  ${terms.map((t) => `<h3 style="margin:16px 0 6px;font-size:13px">${esc(t.title)}</h3>${t.body.flat().map(p).join("")}`).join("")}
+  <h3 style="margin:16px 0 6px;font-size:13px">Vzorový formulář pro odstoupení od smlouvy</h3>
+  ${withdrawalForm.map(p).join("")}`;
 
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   let body: Record<string, unknown>;
@@ -68,15 +43,14 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   if (!voucher) return json({ error: "Vyberte prosím poukaz." }, 400);
   if (!name) return json({ error: "Zadejte jméno." }, 400);
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "Neplatný e-mail." }, 400);
+  if (!isEmail(email)) return json({ error: "Neplatný e-mail." }, 400);
 
   if (!env.RESEND_API_KEY) {
     console.error("Chybí RESEND_API_KEY");
     return json({ error: "Objednávku se teď nepodařilo odeslat. Napište mi prosím na nutrisniky@seznam.cz." }, 500);
   }
 
-  const to = env.CONTACT_TO_EMAIL || "nutrisniky@seznam.cz";
-  const sender = env.CONTACT_FROM_EMAIL || "Nutrisniky <onboarding@resend.dev>";
+  const { to, sender } = addresses(env);
   const qrUrl = new URL(voucher.qr, request.url).toString();
   const voucherLabel = `${formatCzk(voucher.price)} — ${voucher.title}`;
 
@@ -97,11 +71,15 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   const customerHtml = shell(`
     <h1 style="margin:0 0 12px;font-size:24px">Děkuji za objednávku!</h1>
-    <p style="margin:0 0 20px;font-size:15px;line-height:1.6">Dobrý den,<br>děkuji za objednávku dárkového poukazu. K platbě stačí naskenovat QR kód níže v bankovní aplikaci. Jakmile mi platba dorazí na účet, pošlu vám poukaz e-mailem.</p>
-    <table role="presentation" cellpadding="0" cellspacing="0">${voucherRows}</table>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6">Dobrý den,<br>potvrzuji přijetí objednávky dárkového poukazu. K platbě stačí naskenovat QR kód níže v bankovní aplikaci. Jakmile mi platba dorazí na účet, pošlu vám poukaz e-mailem.</p>
+    <table role="presentation" cellpadding="0" cellspacing="0">${voucherRows}
+      ${row("Celkem k úhradě", formatCzk(voucher.price))}
+      ${row("Platnost poukazu", esc(`${plain(VOUCHER_VALIDITY)} od vystavení`))}
+    </table>
     <div style="margin:24px 0 8px;text-align:center"><img src="${qrUrl}" width="240" alt="QR kód k platbě ${formatCzk(voucher.price)}" style="max-width:240px;border-radius:16px;background:#fff;padding:8px"></div>
     <p style="margin:0;text-align:center;font-size:13px;color:#7a5a43">QR platba · ${formatCzk(voucher.price)}</p>
-    <p style="margin:24px 0 0;font-size:14px;line-height:1.6">Máte dotaz? Stačí odpovědět na tento e-mail nebo zavolat na 722 671 187.<br><br>Nicola Zounková<br>Nutrisniky</p>`);
+    <p style="margin:24px 0 0;font-size:14px;line-height:1.6">Máte dotaz? Stačí odpovědět na tento e-mail nebo zavolat na 722 671 187. Od smlouvy můžete do 14 dnů odstoupit na <a href="${WITHDRAWAL_URL}" style="color:#2a9d96">nutrisniky.cz/odstoupeni-od-smlouvy</a>.<br><br>Nicola Zounková<br>Nutrisniky</p>
+    ${termsHtml()}`);
 
   try {
     await sendEmail(env, {
@@ -123,7 +101,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       from: sender,
       to: [email],
       reply_to: to,
-      subject: "Děkuji za objednávku dárkového poukazu — Nutrisniky",
+      subject: "Potvrzení objednávky dárkového poukazu, Nutrisniky",
       html: customerHtml,
       attachments: [{ path: qrUrl, filename: `qr-platba-${voucher.price}-kc.png` }],
     });

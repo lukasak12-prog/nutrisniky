@@ -1,15 +1,13 @@
-﻿import React from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
-import VouchersPage from "./VouchersPage";
+import { pageFor } from "./routes";
 import "./styles.css";
 import { initAnalytics } from "./lib/analytics";
 
 initAnalytics();
 
 // Jednoduché rozlišení stránek podle adresy.
-const path = window.location.pathname.replace(/\/+$/, "").replace(/\.html$/, "");
-const Page = path === "/poukazy" ? VouchersPage : App;
+const Page = pageFor(window.location.pathname);
 
 const rootEl = document.getElementById("root")!;
 const app = (

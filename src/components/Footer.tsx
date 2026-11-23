@@ -21,9 +21,10 @@ export function Footer() {
         </div>
 
         <div className="space-y-2 text-sm text-brown-foreground/80">
-          <a href="#" className="block underline-offset-4 transition hover:text-brown-foreground hover:underline">Zásady ochrany osobních údajů</a>
-          <a href="#" className="block underline-offset-4 transition hover:text-brown-foreground hover:underline">Obchodní podmínky</a>
-          <a href="#" className="block underline-offset-4 transition hover:text-brown-foreground hover:underline">Rušení a přesouvání termínů</a>
+          <a href="/ochrana-osobnich-udaju" className="block underline-offset-4 transition hover:text-brown-foreground hover:underline">Zásady ochrany osobních údajů</a>
+          <a href="/obchodni-podminky" className="block underline-offset-4 transition hover:text-brown-foreground hover:underline">Obchodní podmínky</a>
+          <a href="/obchodni-podminky#terminy" className="block underline-offset-4 transition hover:text-brown-foreground hover:underline">Rušení a přesouvání termínů</a>
+          <a href="/odstoupeni-od-smlouvy" className="block underline-offset-4 transition hover:text-brown-foreground hover:underline">Odstoupit od smlouvy</a>
           <button
             type="button"
             onClick={() => window.dispatchEvent(new Event(OPEN_COOKIE_SETTINGS))}

@@ -14,7 +14,13 @@ await build({
   build: { ssr: "src/entry-server.tsx", outDir: ssrOut, emptyOutDir: true, copyPublicDir: false },
 });
 
-const { render, pages, headTags } = await import(pathToFileURL(path.join(ssrOut, "entry-server.js")).href);
+const { render, pages, headTags, openItems } = await import(pathToFileURL(path.join(ssrOut, "entry-server.js")).href);
+// Nehotové právní texty se nesmí dostat na web. Pro lokální náhled: ALLOW_DRAFT=1 npm run build
+if (openItems.length && !process.env.ALLOW_DRAFT) {
+  await fs.rm(ssrOut, { recursive: true, force: true });
+  throw new Error(`V src/data/legal.ts zbývá potvrdit:\n- ${openItems.join("\n- ")}`);
+}
+
 const template = await fs.readFile(path.join(dist, "index.html"), "utf8");
 
 for (const page of pages) {
