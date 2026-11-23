@@ -1,6 +1,6 @@
 // Google Analytics 4 (ID měření G-9DKKN39Q2J) se souhlasem návštěvníka.
 // Značka se načte AŽ po kliknutí na „Přijmout“ (v ČR je souhlas s analytickými cookies povinný).
-// Do té doby se události jen ukládají do dataLayer a nikam se neodesílají.
+// Bez souhlasu se události zahodí, aby se po jeho udělení neodeslaly zpětně.
 
 const GA_ID = "G-9DKKN39Q2J";
 const STORAGE_KEY = "nutrisniky-cookies";
@@ -63,6 +63,11 @@ export function initAnalytics() {
   }
 }
 
+/** Úplně zastaví už načtené GA (samotné odvolání souhlasu by dál posílalo požadavky bez cookies). */
+function setDisabled(off: boolean) {
+  (window as unknown as Record<string, boolean>)[`ga-disable-${GA_ID}`] = off;
+}
+
 export function setConsent(value: Consent) {
   try {
     localStorage.setItem(STORAGE_KEY, value);
@@ -70,6 +75,7 @@ export function setConsent(value: Consent) {
     /* soukromé okno apod. */
   }
   ensureGtag();
+  setDisabled(value === "denied");
   window.gtag("consent", "update", { analytics_storage: value });
   if (value === "granted") {
     loadTag();
@@ -87,7 +93,7 @@ export function setConsent(value: Consent) {
 
 /** Odeslání události do GA4 (bez souhlasu se nic neodešle). */
 export function track(event: string, params: Record<string, unknown> = {}) {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined" || getConsent() !== "granted") return;
   ensureGtag();
   window.gtag("event", event, params);
 }
