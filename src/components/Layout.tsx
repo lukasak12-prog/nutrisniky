@@ -6,10 +6,8 @@ import { track } from "@/lib/analytics";
 
 export function Layout({
   children,
-  transparentHeader = false,
 }: {
   children: React.ReactNode;
-  transparentHeader?: boolean;
 }) {
   // kliky na telefon a e-mail jako události v GA4
   useEffect(() => {
@@ -25,7 +23,7 @@ export function Layout({
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Header transparent={transparentHeader} />
+      <Header />
       <main className="flex-1">{children}</main>
       <Footer />
       <CookieConsent />

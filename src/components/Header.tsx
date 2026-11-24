@@ -1,4 +1,4 @@
-import { Phone, Menu, X, Instagram, Facebook } from "lucide-react";
+import { Menu, X, Instagram, Facebook } from "lucide-react";
 import logoImg from "@/assets/nutrisniky2.png";
 import { useState, useEffect } from "react";
 
@@ -10,10 +10,9 @@ const nav = [
   { href: "/#kontakt", label: "Kontakt" },
 ] as const;
 
-export function Header({ transparent = false }: { transparent?: boolean }) {
+export function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [isMobileWidth, setIsMobileWidth] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -22,42 +21,29 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    const check = () => setIsMobileWidth(window.innerWidth < 768);
-    check();
-    window.addEventListener("resize", check, { passive: true });
-    return () => window.removeEventListener("resize", check);
-  }, []);
-
-  const isTransparent = transparent && !scrolled && !isMobileWidth;
-  const base = isTransparent
-    ? "fixed inset-x-0 top-0 z-30 bg-transparent transition-all duration-300"
-    : "fixed inset-x-0 top-0 z-30 border-b border-border/70 bg-background/85 shadow-[0_18px_45px_-35px_rgba(77,58,41,0.45)] backdrop-blur-xl transition-all duration-300";
-  const textColor = isTransparent ? "text-white" : "text-foreground";
-
   return (
-    <header className={base}>
-      <div className={`mx-auto flex max-w-screen-2xl items-center justify-between gap-4 px-4 transition-all duration-300 ${scrolled ? "py-2" : "py-4"}`}>
-        <a href="/" className="group transition hover:-translate-y-0.5 hover:opacity-90">
-          <img src={logoImg} alt="Nutrisniky" className={`w-auto rounded-xl transition-all duration-300 ${scrolled ? "h-8 md:h-12" : "h-10 md:h-16"}`} />
+    <header style={{ viewTransitionName: "hlavicka" }} className={`fixed inset-x-0 top-0 z-30 border-b bg-background ${scrolled ? "border-border" : "border-transparent"}`}>
+      <div className={`mx-auto flex max-w-screen-2xl items-center justify-between px-4 lg-cols ${scrolled ? "py-2" : "py-4"}`}>
+        <a href="/">
+          <img src={logoImg} alt="Nutrisniky" className={`w-auto rounded-lg ${scrolled ? "h-8 md:h-12" : "h-10 md:h-16"}`} />
         </a>
 
-        <nav className={`hidden items-center gap-8 lg:flex ${textColor}`}>
-          <a href="/#hero" className="text-sm font-medium transition hover:text-turquoise">Domů</a>
+        <nav className="hidden items-center justify-between gap-3 lg:flex xl:justify-start xl:gap-7">
+          <a href="/#hero" className="nav-link font-medium">Domů</a>
           {nav.map((item) => (
             <a
               key={item.href}
               href={item.href}
-              className="text-sm font-medium transition hover:text-turquoise"
+              className="nav-link font-medium"
             >
               {item.label}
             </a>
           ))}
         </nav>
 
-        <div className={`hidden items-center gap-5 lg:flex ${textColor}`}>
-          <a href="tel:+420722671187" className="flex items-center gap-2 text-sm">
-            <Phone className="h-4 w-4" /> +420 722 671 187
+        <div className="hidden items-center justify-between gap-3 lg:flex">
+          <a href="tel:+420722671187" className="hidden whitespace-nowrap font-semibold xl:block">
+            +420 722 671 187
           </a>
           <div className="flex items-center gap-2">
             <a
@@ -65,7 +51,7 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
-              className={`flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-turquoise/20 hover:text-turquoise ${isTransparent ? "bg-white/10" : "bg-border/40"}`}
+              className="flex h-10 w-10 items-center justify-center rounded-lg transition-colors hover:bg-sand"
             >
               <Instagram className="h-4 w-4" />
             </a>
@@ -74,48 +60,49 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Facebook"
-              className={`flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-turquoise/20 hover:text-turquoise ${isTransparent ? "bg-white/10" : "bg-border/40"}`}
+              className="flex h-10 w-10 items-center justify-center rounded-lg transition-colors hover:bg-sand"
             >
               <Facebook className="h-4 w-4" />
             </a>
           </div>
           <a
             href="/#kontakt"
-            className="rounded-full bg-turquoise px-5 py-2.5 text-sm font-semibold text-turquoise-foreground shadow-lg shadow-turquoise/20 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-turquoise/25"
+            className="btn btn-main whitespace-nowrap"
           >
             Napište mi zprávu
           </a>
         </div>
 
         <button
-          className={`lg:hidden ${textColor}`}
+          className="flex h-11 w-11 items-center justify-center lg:hidden"
           onClick={() => setOpen(!open)}
           aria-label="Menu"
+          aria-expanded={open}
         >
           {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
 
       {open && (
-        <div className="border-t border-border/70 bg-background/95 shadow-xl backdrop-blur-xl lg:hidden">
-          <div className="mx-auto flex max-w-screen-2xl flex-col gap-3 px-4 py-5 text-foreground">
-            <a href="/#hero" onClick={() => setOpen(false)} className="rounded-xl px-3 py-2 text-sm font-medium hover:bg-turquoise/10">Domů</a>
+        <div className="enter border-t border-border bg-background lg:hidden">
+          <div className="mx-auto flex max-w-screen-2xl flex-col px-4 py-4 text-foreground">
+            <a href="/#hero" onClick={() => setOpen(false)} className="py-2.5 text-lg font-semibold">Domů</a>
             {nav.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="rounded-xl px-3 py-2 text-sm font-medium hover:bg-turquoise/10"
+                className="border-t border-border py-2.5 text-lg font-semibold"
               >
                 {item.label}
               </a>
             ))}
-            <div className="mt-2 flex items-center gap-3 px-3">
+            <div className="flex items-center gap-6 border-t border-border py-2">
               <a
                 href="https://www.instagram.com/nutrisniky"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium hover:bg-turquoise/10"
+                className="flex min-h-11 items-center gap-2 font-medium"
               >
                 <Instagram className="h-4 w-4" /> Instagram
               </a>
@@ -123,7 +110,7 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
                 href="https://www.facebook.com/profile.php?id=61568124151775"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium hover:bg-turquoise/10"
+                className="flex min-h-11 items-center gap-2 font-medium"
               >
                 <Facebook className="h-4 w-4" /> Facebook
               </a>
@@ -131,7 +118,7 @@ export function Header({ transparent = false }: { transparent?: boolean }) {
             <a
               href="/#kontakt"
               onClick={() => setOpen(false)}
-              className="mt-2 rounded-full bg-turquoise px-5 py-2.5 text-center text-sm font-medium text-turquoise-foreground"
+              className="btn btn-main mt-2"
             >
               Napište mi zprávu
             </a>

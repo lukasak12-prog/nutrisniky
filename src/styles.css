@@ -2,11 +2,26 @@
 @source "../src";
 @import "tw-animate-css";
 
+@font-face {
+  font-family: "Commissioner";
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("./assets/fonts/commissioner-latin-ext-flar-normal.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Commissioner";
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("./assets/fonts/commissioner-latin-flar-normal.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
-  --font-display: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Commissioner", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-sans);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -39,35 +54,41 @@
   --color-brown-foreground: var(--brown-foreground);
   --color-turquoise: var(--turquoise);
   --color-turquoise-foreground: var(--turquoise-foreground);
+  --color-teal: var(--teal);
+  --color-sand: var(--sand);
 }
 
 :root {
-  --radius: 1.35rem;
+  --radius: 0.5rem;
 
-  --background: oklch(0.995 0.006 82);
+  --background: oklch(0.985 0.012 82);
   --foreground: oklch(0.27 0.025 58);
 
-  --card: oklch(0.995 0.004 82);
+  --card: oklch(0.995 0.005 82);
   --card-foreground: oklch(0.28 0.02 60);
   --popover: oklch(0.995 0.004 82);
   --popover-foreground: oklch(0.28 0.02 60);
 
   /* brown accent (matches the photo / footer) */
-  --brown: oklch(0.48 0.055 55);
+  --brown: oklch(0.42 0.055 52);
   --brown-foreground: oklch(0.98 0.005 60);
 
   /* turquoise CTA */
   --turquoise: oklch(0.76 0.11 195);
   --turquoise-foreground: oklch(0.22 0.025 60);
+  /* tyrkysová pro text a odkazy (světlá má na krémové malý kontrast) */
+  --teal: oklch(0.43 0.075 205);
+  /* béžový kruh z poukazů */
+  --sand: #ebded5;
 
-  --primary: oklch(0.48 0.055 55);
+  --primary: oklch(0.42 0.055 52);
   --primary-foreground: oklch(0.98 0.005 60);
 
-  --secondary: oklch(0.965 0.018 82);
+  --secondary: oklch(0.958 0.022 80);
   --secondary-foreground: oklch(0.28 0.02 60);
 
   --muted: oklch(0.945 0.014 82);
-  --muted-foreground: oklch(0.47 0.025 62);
+  --muted-foreground: oklch(0.44 0.028 60);
 
   --accent: oklch(0.82 0.09 200);
   --accent-foreground: oklch(0.28 0.02 60);
@@ -75,8 +96,8 @@
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.98 0.005 60);
 
-  --border: oklch(0.885 0.018 76);
-  --input: oklch(0.885 0.018 76);
+  --border: oklch(0.86 0.022 72);
+  --input: oklch(0.86 0.022 72);
   --ring: oklch(0.82 0.09 200);
 }
 
@@ -87,25 +108,44 @@
   html {
     scroll-behavior: smooth;
   }
+  /* 4K: celá stránka roste s obrazovkou */
+  @media (min-width: 2200px) {
+    html {
+      font-size: 0.8vw;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *, *::before, *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+  :focus-visible {
+    outline: 3px solid var(--teal);
+    outline-offset: 3px;
+  }
   section[id] {
     scroll-margin-top: 80px;
   }
   body {
-    background:
-      radial-gradient(circle at top left, rgba(131, 197, 190, 0.18), transparent 34rem),
-      linear-gradient(180deg, oklch(0.985 0.012 82), var(--color-secondary) 35rem);
     background-color: var(--color-secondary);
     color: var(--color-foreground);
     font-family: var(--font-sans);
-    font-size: 16px;
-    line-height: 1.65;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    font-variant-numeric: lining-nums;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
   h1, h2, h3, h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.035em;
-    line-height: 1.08;
+    font-variation-settings: "FLAR" 100;
+    font-weight: 650;
+    letter-spacing: -0.015em;
+    line-height: 1.1;
     text-wrap: balance;
   }
   p, li {
@@ -120,164 +160,713 @@
 }
 
 @layer components {
-  @keyframes heroReveal {
+  /* nadpis sekce */
+  .h-section {
+    font-size: clamp(2.1rem, 1.5rem + 2.3vw, 3.6rem);
+  }
+
+  /* sloupce hlavičky */
+  @media (min-width: 1024px) {
+    .lg-cols {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 6fr) minmax(0, 5fr);
+      column-gap: clamp(1.25rem, 2.6vw, 3.25rem);
+    }
+  }
+
+  /* úvod: zeď, nápis, Nicola před nápisem (maska má stejný výřez jako fotka) */
+  .hero {
+    position: relative;
+    isolation: isolate;
+    padding-top: 4.5rem;
+    background: var(--background);
+    --photo: min(112vw, 58svh);
+  }
+  .hero img {
+    display: block;
+    width: 100%;
+    height: var(--photo);
+    object-fit: cover;
+    object-position: 32% 50%;
+  }
+  .hero h1 {
+    position: absolute;
+    z-index: 1;
+    inset: 4.5rem 0 auto;
+    height: var(--photo);
+    color: oklch(0.53 0.095 197);
+    mix-blend-mode: multiply;
+    mask: var(--maska) 32% 50% / cover no-repeat;
+    font-weight: 750;
+    letter-spacing: -0.025em;
+    font-size: min(13.4vw, 9svh);
+    line-height: 1;
+  }
+  .hero h1 span {
+    position: absolute;
+    white-space: nowrap;
+    padding: 0.14em 0.06em 0.22em 0;
+  }
+  .hero h1 span:first-child {
+    right: 4vw;
+    top: 5%;
+  }
+  .hero h1 span:last-child {
+    right: 4vw;
+    top: 22%;
+  }
+  .hero-text {
+    display: grid;
+    gap: 1.25rem;
+    padding: 1.6rem 1rem 3rem;
+  }
+  .hero-text p {
+    font-size: clamp(1.25rem, 1rem + 0.8vw, 1.6rem);
+    line-height: 1.3;
+  }
+  .hero-go {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  /* telefon: nápis přes celou šířku, spodek druhého řádku zajede za temeno */
+  @media (max-width: 599px) {
+    .hero {
+      --photo: min(134vw, 100svh - 4.5rem - 10.6rem);
+      --fs: 22.3vw;
+    }
+    .hero img {
+      object-position: 50% 0;
+    }
+    .hero h1 {
+      font-size: var(--fs);
+      mask: var(--maska-mobil) 50% 0 / cover no-repeat;
+    }
+    .hero h1 span:first-child {
+      left: 3.6vw;
+      right: auto;
+      top: -0.07em;
+    }
+    .hero h1 span:last-child {
+      left: 3.6vw;
+      right: auto;
+      top: 0.76em;
+    }
+    .hero-text {
+      gap: 1rem;
+      padding: 1.1rem 1rem 1.6rem;
+    }
+    .hero-go {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .hero-go .btn {
+      padding-inline: 0.5rem;
+    }
+  }
+  @media (min-width: 900px) {
+    .hero {
+      padding-top: 6rem;
+      --photo: max(100svh - 6rem, 30rem);
+      --fs: min(12.1vw, 25svh);
+    }
+    .hero img {
+      object-position: 50% 12%;
+    }
+    .hero h1 {
+      inset: 6rem 0 auto;
+      mask-position: 50% 12%;
+      font-size: var(--fs);
+    }
+    .hero h1 span:first-child {
+      left: 36.4%;
+      right: auto;
+      top: clamp(0.2rem, 4svh, 4rem);
+    }
+    .hero h1 span:last-child {
+      left: 45.2%;
+      right: auto;
+      top: calc(clamp(0.2rem, 4svh, 4rem) + var(--fs) * 0.92);
+    }
+    .hero-text {
+      position: absolute;
+      z-index: 3;
+      left: 51.5%;
+      right: 1rem;
+      top: calc(6rem + clamp(0.2rem, 4svh, 4rem) + var(--fs) * 2.28);
+      padding: 0;
+      gap: clamp(0.9rem, 2.6svh, 2.2rem);
+    }
+    .hero-text p {
+      font-size: clamp(1.3rem, 1.9vw, 2.4rem);
+    }
+  }
+
+  /* přechod z úvodu: úvod stojí, lehce ustoupí a ztmavne, další sekce přes něj čistě přejede */
+  .slide {
+    --p: 0;
+    position: relative;
+  }
+  .slide > .hero {
+    transform: translateY(calc(var(--p) * -4svh));
+  }
+  .slide > .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    background: oklch(0.27 0.03 60);
+    opacity: calc(var(--p) * 0.28);
+    pointer-events: none;
+  }
+  @media (min-height: 36rem) {
+    /* záporný posun: po zmenšení hlavičky zůstane fotka hned pod ní */
+    .slide > .hero {
+      position: sticky;
+      top: -0.7rem;
+    }
+  }
+  @media (min-width: 900px) and (min-height: 36rem) {
+    .slide > .hero {
+      top: -1.9rem;
+    }
+  }
+  .help {
+    position: relative;
+    z-index: 1;
+    padding: clamp(4.5rem, 8vw, 8rem) 0 clamp(5rem, 9vw, 9rem);
+    background: var(--secondary);
+  }
+  .help h2 {
+    font-size: clamp(2.4rem, 1.6rem + 3.2vw, 5.4rem);
+  }
+  /* linka nad tématem se dotáhne zleva */
+  .help li {
+    position: relative;
+    padding-top: 1.25rem;
+  }
+  .help li::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 2px;
+    background: oklch(0.42 0.075 197);
+    transform-origin: 0 50%;
+    transition: transform 0.9s var(--ease-in-out) var(--d, 0ms);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    min-height: 3rem;
+    padding: 0.7rem 1.5rem;
+    border-radius: var(--radius);
+    border: 2px solid transparent;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.16s ease-out, border-color 0.16s ease-out, color 0.16s ease-out, transform 0.12s ease-out;
+  }
+  .btn:active {
+    transform: scale(0.98);
+  }
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .btn-main {
+    background: var(--turquoise);
+    color: var(--turquoise-foreground);
+  }
+  .btn-brown {
+    background: var(--brown);
+    color: var(--brown-foreground);
+  }
+  .btn-line {
+    border-color: currentColor;
+    color: var(--foreground);
+  }
+  @media (hover: hover) {
+    .btn-main:not(:disabled):hover {
+      background: oklch(0.83 0.1 192);
+    }
+    .btn-brown:not(:disabled):hover {
+      background: oklch(0.34 0.05 52);
+    }
+    .btn-line:hover {
+      background: var(--foreground);
+      border-color: var(--foreground);
+      color: var(--background);
+    }
+  }
+
+  .field {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.65rem 0.9rem;
+    border-radius: var(--radius);
+    border: 1px solid oklch(0.62 0.03 65);
+    background: var(--card);
+    transition: border-color 0.16s ease-out;
+  }
+  .field:hover {
+    border-color: var(--foreground);
+  }
+  .field:focus {
+    outline: 3px solid var(--turquoise);
+    outline-offset: 0;
+    border-color: var(--teal);
+  }
+
+  /* linka nad údajem, stejná jako na poukazu */
+  .rule {
+    border-top: 2px solid color-mix(in oklch, var(--brown) 35%, transparent);
+  }
+
+  /* zvýrazňovač */
+  .fixa {
+    white-space: nowrap;
+    color: inherit;
+    padding: 0 0.12em;
+    background: linear-gradient(transparent 22%, oklch(0.86 0.08 192) 22%, oklch(0.86 0.08 192) 88%, transparent 88%);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  /* ---------- pohyb ---------- */
+  :root {
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  }
+
+  /* vějíř poukazů na úvodní stránce: po najetí se rozevře */
+  .fan {
+    transition: translate 0.45s var(--ease-out), rotate 0.45s var(--ease-out), scale 0.45s var(--ease-out);
+  }
+  .fan-left {
+    left: 0;
+    top: 2.5rem;
+    rotate: -9deg;
+  }
+  .fan-right {
+    right: 0;
+    top: 3rem;
+    rotate: 8deg;
+  }
+  .fan-mid {
+    left: 50%;
+    top: 0;
+    translate: -50% 0;
+  }
+  .teaser:focus-visible .fan-left {
+    translate: -9% 3%;
+    rotate: -15deg;
+  }
+  .teaser:focus-visible .fan-right {
+    translate: 9% 4%;
+    rotate: 14deg;
+  }
+  .teaser:focus-visible .fan-mid {
+    translate: -50% -9%;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .teaser:hover .fan-left {
+      translate: -9% 3%;
+      rotate: -15deg;
+    }
+    .teaser:hover .fan-right {
+      translate: 9% 4%;
+      rotate: 14deg;
+    }
+    .teaser:hover .fan-mid {
+      translate: -50% -9%;
+      scale: 1.03;
+    }
+  }
+  /* na dotykových obrazovkách se rozevře, když je vidět */
+  @media (hover: none) {
+    .teaser.in .fan-left {
+      translate: -3% 3%;
+      rotate: -13deg;
+    }
+    .teaser.in .fan-right {
+      translate: 3% 4%;
+      rotate: 12deg;
+    }
+    .teaser.in .fan-mid {
+      translate: -50% -9%;
+    }
+  }
+
+  /* poukaz na /poukazy: po najetí se pootočí, aby bylo poznat, že má i druhou stranu */
+  .flip-card {
+    transform-style: preserve-3d;
+    transition: transform 0.6s var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    button:hover > .flip-card:not(.is-flipped) {
+      transform: rotateY(-12deg);
+    }
+  }
+  .flip-card.is-flipped {
+    transform: rotateY(180deg);
+  }
+
+  /* odkazy v menu: linka se dotáhne zleva */
+  .nav-link {
+    padding-block: 0.35rem;
+    background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 2px;
+    transition: background-size 0.2s var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .nav-link:hover {
+      background-size: 100% 2px;
+    }
+  }
+
+  /* úvod: nápis se na zdi klidně objeví zleva doprava */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero h1 span {
+      animation: napsat 1s var(--ease-in-out) 0.1s both;
+    }
+    .hero h1 span + span {
+      animation-delay: 0.35s;
+    }
+    .hero-text > * {
+      animation: pod-napisem 0.5s var(--ease-out) 0.95s both;
+    }
+    .hero-text > * + * {
+      animation-delay: 1.03s;
+    }
+  }
+  @keyframes napsat {
     from {
-      opacity: 0;
-      transform: scale(1.06);
+      clip-path: inset(-10% 100% -10% -5%);
     }
     to {
-      opacity: 1;
-      transform: scale(1);
+      clip-path: inset(-10% -5% -10% -5%);
     }
   }
-
-  .animate-hero-reveal {
-    animation: heroReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  }
-
-  @keyframes heroZoom {
-    0%, 100% { transform: scale(1); }
-    50%       { transform: scale(1.06); }
-  }
-
-  .animate-hero-zoom {
-    animation:
-      heroReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards,
-      heroZoom 14s ease-in-out 1.6s infinite;
-  }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes fadeIn {
+  @keyframes pod-napisem {
     from {
       opacity: 0;
     }
-    to {
-      opacity: 1;
+  }
+
+  /* otevření menu na mobilu, potvrzení odeslané zprávy */
+  .enter {
+    transition: opacity 0.22s var(--ease-out), translate 0.22s var(--ease-out);
+    @starting-style {
+      opacity: 0;
+      translate: 0 -0.4rem;
     }
   }
 
-  @keyframes slideInLeft {
+  /* kreslí se, až když je to vidět; bez JavaScriptu a při omezeném pohybu je vše hotové rovnou */
+  .ring-fill {
+    transition: stroke-dasharray 0.9s var(--ease-in-out);
+  }
+  .dot-on {
+    transition: background-color 0.25s ease var(--d, 0ms), color 0.25s ease var(--d, 0ms);
+  }
+  .sheet-2,
+  .sheet-3 {
+    transition: translate 0.6s var(--ease-out);
+  }
+  .fixa {
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.35s var(--ease-in-out) var(--d, 0ms);
+  }
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    [data-in]:not(.in) .ring-fill {
+      stroke-dasharray: 0 200 !important;
+    }
+    [data-in]:not(.in) .dot-on {
+      background-color: var(--sand) !important;
+      color: var(--muted-foreground) !important;
+    }
+    .help li:not(.in)::before {
+      transform: scaleX(0);
+    }
+    [data-in]:not(.in) .sheet-2 {
+      translate: 0 -0.6rem;
+    }
+    [data-in]:not(.in) .sheet-3 {
+      translate: 0 -1.1rem;
+    }
+    [data-in]:not(.in) .fixa {
+      background-size: 0 100%;
+    }
+  }
+
+  /* ---------- náhled poukazu se jmény (souřadnice podle obrázku 1588 × 748) ---------- */
+  .preview {
+    position: relative;
+    container-type: inline-size;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .preview > div {
+    position: relative;
+    transform-origin: 1% 100%;
+    transition: transform 0.5s var(--ease-in-out);
+  }
+  /* na mobilu se při psaní přiblíží řádek se jmény */
+  @container (max-width: 520px) {
+    .preview > .is-near {
+      transform: scale(1.95);
+    }
+  }
+  .preview img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .preview .line {
+    position: absolute;
+    bottom: 8%;
+    width: 19.96%;
+    height: 6.6%;
+    padding-bottom: 0.3cqw;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    white-space: nowrap;
+    font-weight: 650;
+    line-height: 1.15;
+    font-size: min(2.2cqw, calc(19.5cqw / (var(--len) * 0.51)));
+    background: linear-gradient(var(--teal), var(--teal)) no-repeat 0 100% / 0 max(1px, 0.2cqw);
+    transition: background-size 0.25s var(--ease-out);
+  }
+  .preview .line-recipient {
+    left: 5.54%;
+  }
+  .preview .line-from {
+    left: 28.53%;
+  }
+  .preview .line.is-active {
+    background-size: 100% max(1px, 0.2cqw);
+  }
+  .preview .line > span {
+    animation: pismeno 0.22s var(--ease-out);
+  }
+  @keyframes pismeno {
     from {
       opacity: 0;
-      transform: translateX(-30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
+      translate: -0.12em 0.18em;
     }
   }
 
-  @keyframes float {
-    0%, 100% {
-      transform: translateY(0px);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
+  /* ---------- co jste dnes jedli: otázka po otázce ---------- */
+  .food {
+    margin-top: clamp(3.5rem, 7vw, 6rem);
+    padding: clamp(1.4rem, 3vw, 3rem);
+    border-radius: var(--radius);
+    background: var(--secondary);
   }
-
-  .animate-fade-in-up {
-    animation: fadeInUp 0.8s ease-out forwards;
+  .food-ask {
+    min-height: 11rem;
   }
-
-  .animate-fade-in {
-    animation: fadeIn 0.8s ease-out forwards;
+  .food-ask h3 {
+    font-size: clamp(1.6rem, 1.2rem + 1.5vw, 2.6rem);
   }
-
-  .animate-slide-in-left {
-    animation: slideInLeft 0.8s ease-out forwards;
+  .food-line {
+    display: flex;
+    gap: 0.6rem;
+    max-width: 34rem;
+    margin-top: 1rem;
   }
-
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
+  .food-line .field {
+    flex: 1;
+    min-width: 0;
+    font-size: 1.15rem;
   }
-
-  @keyframes cardShimmer {
-    0%   { transform: translateX(-160%) skewX(-20deg); opacity: 0; }
-    8%   { opacity: 1; }
-    38%  { opacity: 1; }
-    44%  { transform: translateX(360%) skewX(-20deg); opacity: 0; }
-    100% { transform: translateX(-160%) skewX(-20deg); opacity: 0; }
+  .food-tips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.4rem;
+    margin-top: 0.4rem;
   }
-
-  .animate-card-shimmer {
-    animation: cardShimmer 6s ease-in-out infinite;
+  .food-tips button {
+    min-height: 2.75rem;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+    cursor: pointer;
   }
-
-  .text-glow {
-    text-shadow: 0 0 20px rgba(131, 197, 190, 0.3);
+  .food-tips button:hover {
+    color: var(--teal);
   }
-
-  .service-card {
-    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+  .food-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 1.6rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--border);
+    gap: 1px;
   }
-
-  .service-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 30px 70px -30px rgba(77, 58, 41, 0.28), 0 20px 45px -24px rgba(131, 197, 190, 0.35);
-    border-color: rgba(131, 197, 190, 0.4);
+  .food-row button {
+    display: block;
+    min-height: 4.6rem;
+    padding: 0.6rem 0.9rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+    background: var(--card);
+    cursor: pointer;
+    transition: box-shadow 0.2s ease;
   }
-
-  .service-card:hover h3 {
-    text-shadow: 0 0 15px rgba(131, 197, 190, 0.2);
+  .food-row button:hover {
+    background: var(--background);
   }
-
-  .price-card {
-    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+  .food-row button:focus-visible {
+    outline-offset: -3px;
   }
-
-  .price-card:hover {
-    box-shadow: 0 24px 55px -28px rgba(77, 58, 41, 0.24), 0 16px 34px -24px rgba(131, 197, 190, 0.32);
-    border-color: rgba(131, 197, 190, 0.4);
+  .food-row [aria-current="step"] {
+    box-shadow: inset 0 -4px 0 var(--turquoise);
   }
-
-  .price-card:hover h3 {
-    text-shadow: 0 0 12px rgba(131, 197, 190, 0.15);
+  .food-row span {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
   }
-
-  .benefit-card {
-    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+  .food-row b {
+    font-weight: 400;
+    line-height: 1.35;
+    color: var(--muted-foreground);
+    overflow-wrap: anywhere;
   }
-
-  .benefit-card:hover {
-    box-shadow: 0 24px 55px -28px rgba(77, 58, 41, 0.24), 0 16px 34px -24px rgba(131, 197, 190, 0.32);
-    border-color: rgba(131, 197, 190, 0.4);
+  .food-row .ok b {
+    font-weight: 650;
+    color: var(--foreground);
   }
-
-  .benefit-card:hover h3 {
-    text-shadow: 0 0 12px rgba(131, 197, 190, 0.15);
+  .food-row mark {
+    color: inherit;
+    padding: 0 0.12em;
+    margin-left: -0.12em;
+    background: linear-gradient(oklch(0.86 0.08 192), oklch(0.86 0.08 192)) no-repeat 0 60% / 100% 72%;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    animation: tah 0.45s var(--ease-in-out);
   }
-
-  .reveal-on-scroll {
-    opacity: 0;
-    transform: translateY(28px) scale(0.985);
-    transition:
-      opacity 0.75s ease,
-      transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
-    transition-delay: var(--reveal-delay, 0ms);
-    will-change: opacity, transform;
-  }
-
-  .reveal-on-scroll.is-visible {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .reveal-on-scroll {
-      opacity: 1;
-      transform: none;
-      transition: none;
+  @keyframes tah {
+    from {
+      background-size: 0 72%;
     }
   }
+  @media (min-width: 900px) {
+    .food-row {
+      grid-template-columns: 0.75fr 1fr 1.2fr 1.2fr 1fr 1.3fr;
+    }
+  }
+
+  /* ---------- 70 teček = 70 kg, na místě kroužku s minutami ---------- */
+  .body-dots .dots {
+    display: grid;
+    grid-template-columns: repeat(14, minmax(0, 1fr));
+    gap: 5px;
+  }
+  .body-dots .dots span {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--turquoise);
+    transition: background-color 0.25s ease;
+  }
+  .body-dots .fat {
+    background: var(--brown) !important;
+  }
+  .body-dots p span {
+    display: inline-block;
+    margin-right: 1.2rem;
+    white-space: nowrap;
+  }
+  .body-dots i {
+    display: inline-block;
+    width: 0.6rem;
+    height: 0.6rem;
+    margin-right: 0.4rem;
+    border-radius: 50%;
+    background: var(--turquoise);
+  }
+  .body-dots input {
+    display: block;
+    width: 100%;
+    height: 2.75rem;
+    margin: 0;
+    appearance: none;
+    background: linear-gradient(90deg, var(--brown) var(--p), var(--turquoise) var(--p)) no-repeat 0 50% / 100% 3px;
+    cursor: grab;
+  }
+  .body-dots input:active {
+    cursor: grabbing;
+  }
+  .body-dots input::-webkit-slider-thumb {
+    appearance: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    border: 3px solid var(--background);
+    background: var(--brown);
+    transition: scale 0.16s var(--ease-out);
+  }
+  .body-dots input::-moz-range-thumb {
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%;
+    border: 3px solid var(--background);
+    background: var(--brown);
+  }
+  .body-dots input:focus-visible {
+    outline: 0;
+  }
+  .body-dots input:focus-visible::-webkit-slider-thumb {
+    outline: 3px solid var(--teal);
+  }
+  .body-dots input:focus-visible::-moz-range-thumb {
+    outline: 3px solid var(--teal);
+  }
+  .body-dots input:active::-webkit-slider-thumb {
+    scale: 1.15;
+  }
+  @media (min-width: 640px) {
+    .body-dots .dots {
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+      gap: 3px;
+    }
+  }
+}
+
+/* přelet poukazů z úvodní stránky na /poukazy a zpět; kdo to neumí, stránku jen otevře.
+   Zapíná ho @view-transition v index.html. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.22s;
+}
+::view-transition-group(poukaz-inbody),
+::view-transition-group(poukaz-konzultace),
+::view-transition-group(poukaz-jidelnicek) {
+  animation-duration: 0.65s;
+  animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
+  z-index: 2;
+}
+::view-transition-group(poukaz-konzultace) {
+  animation-delay: 0.06s;
+  animation-fill-mode: both;
+}
+::view-transition-group(poukaz-jidelnicek) {
+  animation-delay: 0.12s;
+  animation-fill-mode: both;
 }

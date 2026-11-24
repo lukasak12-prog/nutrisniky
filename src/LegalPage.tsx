@@ -25,11 +25,11 @@ function Sections({ sections }: { sections: Section[] }) {
     <>
       {sections.map((s) => (
         <section key={s.id} id={s.id} className="scroll-mt-28 border-t border-border pt-8">
-          <h2 className="text-2xl font-semibold">{s.title}</h2>
+          <h2 className="text-2xl">{s.title}</h2>
           <div className="mt-4 space-y-4 leading-7 text-foreground/85">
             {s.body.map((b, i) =>
               Array.isArray(b) ? (
-                <ul key={i} className="list-disc space-y-2 pl-5 marker:text-turquoise">
+                <ul key={i} className="list-disc space-y-2 pl-5 marker:text-brown">
                   {b.map((li) => <li key={li}><Text>{li}</Text></li>)}
                 </ul>
               ) : (
@@ -41,7 +41,7 @@ function Sections({ sections }: { sections: Section[] }) {
             <>
               <a
                 href={WITHDRAWAL_PATH}
-                className="mt-6 inline-flex rounded-full bg-brown px-6 py-3 text-sm font-semibold text-brown-foreground transition hover:opacity-90"
+                className="btn btn-brown mt-6"
               >
                 Odstoupit od smlouvy
               </a>
@@ -78,7 +78,7 @@ export function DocumentPage({ path, title, intro, sections, showSeller = false 
             Návrh. Zvýrazněné údaje čekají na potvrzení.
           </p>
         )}
-        <h1 className="max-w-3xl text-4xl font-semibold md:text-5xl">{title}</h1>
+        <h1 className="max-w-3xl h-section">{title}</h1>
         <p className="mt-5 max-w-2xl leading-7 text-muted-foreground"><Text>{intro}</Text></p>
 
         {showSeller && (
@@ -86,7 +86,7 @@ export function DocumentPage({ path, title, intro, sections, showSeller = false 
           <dl className="mt-12 grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
             {seller.map(([label, value]) => (
               <div key={label} className="border-b-2 border-brown/25 pb-2">
-                <dt className="text-[11px] font-bold uppercase tracking-[0.2em] text-brown">{label}</dt>
+                <dt className="text-sm text-muted-foreground">{label}</dt>
                 <dd className="mt-1 text-foreground"><Text>{value}</Text></dd>
               </div>
             ))}
