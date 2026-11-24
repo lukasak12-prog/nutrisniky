@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, RotateCw } from "lucide-react";
+import { Check } from "lucide-react";
 import { vouchers, formatCzk, type Voucher } from "@/data/vouchers";
 import { track } from "@/lib/analytics";
 import img350 from "@/assets/poukazy/poukaz-350.png";
@@ -30,14 +30,15 @@ const steps = [
 
 type OrderResult = { voucher: Voucher; email: string; emailSent: boolean };
 
+const lead = "Poukaz na konzultaci, měření nebo jídelníček na míru. Dárek, který vydrží déle než bonboniéra.";
+
 const inputClass = "field";
 
-function VoucherFlip({ voucher }: { voucher: Voucher }) {
-  const [flipped, setFlipped] = useState(false);
+function VoucherFlip({ voucher, flipped, onFlip }: { voucher: Voucher; flipped: boolean; onFlip: () => void }) {
   return (
     <button
       type="button"
-      onClick={() => setFlipped((f) => !f)}
+      onClick={onFlip}
       aria-label={`${flipped ? "Přední strana" : "Zadní strana"} poukazu ${formatCzk(voucher.price)}`}
       style={{ viewTransitionName: `poukaz-${voucher.id}` }}
       className="group/flip relative block w-full cursor-pointer [perspective:1600px]"
@@ -48,8 +49,7 @@ function VoucherFlip({ voucher }: { voucher: Voucher }) {
         <img
           src={images[voucher.id]}
           alt={`Dárkový poukaz ${formatCzk(voucher.price)}, ${voucher.title}`}
-          loading="lazy"
-          className="absolute inset-0 h-full w-full rounded-lg object-cover ring-1 ring-border [backface-visibility:hidden]"
+          className="bg-card absolute inset-0 h-full w-full rounded-lg object-cover ring-1 ring-border [backface-visibility:hidden]"
         />
         <img
           src={imgBack}
@@ -58,10 +58,6 @@ function VoucherFlip({ voucher }: { voucher: Voucher }) {
           className="absolute inset-0 h-full w-full rounded-lg object-cover ring-1 ring-border [backface-visibility:hidden] [transform:rotateY(180deg)]"
         />
       </div>
-      <span className="pointer-events-none absolute bottom-2.5 left-2.5 inline-flex items-center gap-1.5 rounded-lg bg-brown px-2.5 py-1 text-xs font-semibold text-brown-foreground">
-        <RotateCw className={`h-3 w-3 transition-transform duration-500 ${flipped ? "rotate-180" : ""}`} />
-        {flipped ? "Přední strana" : "Zadní strana"}
-      </span>
     </button>
   );
 }
@@ -89,7 +85,10 @@ function VoucherPreview({ voucher, names, field }: { voucher: Voucher; names: { 
 }
 
 export function VouchersSection() {
-  const [selectedId, setSelectedId] = useState<Voucher["id"]>("konzultace");
+  const [order, setOrder] = useState<Voucher["id"][]>(["konzultace", "jidelnicek", "inbody"]);
+  const selectedId = order[0];
+  const [flipped, setFlipped] = useState<Voucher["id"] | null>(null);
+  const [picked, setPicked] = useState<{ id: Voucher["id"]; from: number } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<OrderResult | null>(null);
@@ -98,8 +97,18 @@ export function VouchersSection() {
 
   const selected = vouchers.find((v) => v.id === selectedId)!;
 
+  const flip = (id: Voucher["id"]) => setFlipped((f) => (f === id ? null : id));
+  // na mobilu stojí poukazy za sebou: vybraný přejde dopředu, ostatní o místo dozadu
+  const pick = (id: Voucher["id"]) => {
+    if (id === selectedId) return;
+    setFlipped(null);
+    setPicked({ id, from: order.indexOf(id) });
+    setOrder([id, ...order.filter((o) => o !== id)]);
+    setResult(null);
+  };
+
   const chooseVoucher = (id: Voucher["id"]) => {
-    setSelectedId(id);
+    pick(id);
     setResult(null);
     document.getElementById("poukaz-objednavka")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
@@ -146,67 +155,71 @@ export function VouchersSection() {
   };
 
   return (
-    <section id="poukazy" className="relative overflow-hidden bg-secondary py-28 md:py-32">
-      {/* Béžový kruh jako na poukazech */}
-      <div className="pointer-events-none absolute -right-32 -top-32 h-72 w-72 rounded-full md:-right-40 md:-top-40 md:h-[34rem] md:w-[34rem] bg-sand" aria-hidden="true" />
+    <section id="poukazy" className="shelf">
+      <div className="wall">
+        <h1>
+          <span>Darujte</span> <span>péči</span> <span>o zdraví</span>
+        </h1>
+        <p className="shelf-text max-md:hidden">{lead}</p>
+      </div>
 
-      <div className="relative mx-auto max-w-screen-2xl px-4">
-        <div className="mx-auto mb-14 max-w-2xl text-center">
-          <h1 className="h-section">Darujte péči o zdraví</h1>
-          <p className="mt-4 text-muted-foreground">
-            Poukaz na konzultaci, měření nebo jídelníček na míru. Dárek, který vydrží déle než bonboniéra.
-          </p>
-        </div>
+      <div className="stand">
+        {vouchers.map((v) => {
+          const isSelected = v.id === selectedId;
+          const depth = order.indexOf(v.id);
+          return (
+            <div
+              key={v.id}
+              className={`stand-item ${isSelected ? "is-selected" : ""} ${picked?.id === v.id ? "is-picked" : ""}`}
+              style={{ "--d": depth, "--z": picked?.from ?? 0 } as React.CSSProperties}
+              onAnimationEnd={(e) => e.animationName === "vpredu" && setPicked(null)}
+            >
+              <div className="stand-card">
+                <VoucherFlip voucher={v} flipped={flipped === v.id} onFlip={() => flip(v.id)} />
+                {!isSelected && (
+                  <button
+                    type="button"
+                    className="stand-pick"
+                    aria-label={`Vybrat poukaz ${formatCzk(v.price)}, ${v.title}`}
+                    onClick={() => pick(v.id)}
+                  />
+                )}
+              </div>
 
-        {/* Karty poukazů */}
-        <div className="grid gap-6 lg:grid-cols-3">
-          {vouchers.map((v) => {
-            const isSelected = v.id === selectedId;
-            return (
-              <div key={v.id}>
-                <div
-                  className={`relative flex h-full flex-col rounded-lg border-2 bg-card p-4 sm:p-5 ${
-                    isSelected
-                      ? "border-teal"
-                      : "border-border"
-                  }`}
-                >
-                  {isSelected && (
-                    <span className="absolute -top-3 right-6 z-10 inline-flex items-center gap-1 rounded-lg bg-teal px-3 py-1 text-sm font-semibold text-white">
-                      <Check className="h-4 w-4" aria-hidden="true" /> Vybráno
-                    </span>
-                  )}
-                  <VoucherFlip voucher={v} />
-
-                  <div className="flex flex-1 flex-col px-1 pt-5">
-                    <div className="mb-6 flex items-start justify-between gap-4">
-                      <ul className="space-y-2.5">
-                        {v.items.map((item) => (
-                          <li key={item.title} >
-                            <span className="block font-semibold leading-snug">{item.title}</span>
-                            <span className="block text-sm text-muted-foreground">{item.subtitle}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      <span className="shrink-0 whitespace-nowrap text-2xl font-bold tabular-nums">{formatCzk(v.price)}</span>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => chooseVoucher(v.id)}
-                      className={`btn mt-auto w-full ${isSelected ? "btn-main" : "btn-line"}`}
-                    >
-                      {isSelected ? "Objednat tento poukaz" : "Vybrat poukaz"}
+              <div className="stand-info">
+                <div className="mb-6 flex items-start justify-between gap-4">
+                  <ul className="space-y-2.5">
+                    {v.items.map((item) => (
+                      <li key={item.title}>
+                        <span className="block font-semibold leading-snug">{item.title}</span>
+                        <span className="block text-sm text-muted-foreground">{item.subtitle}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="shrink-0 text-right">
+                    <span className="block whitespace-nowrap text-2xl font-bold tabular-nums">{formatCzk(v.price)}</span>
+                    <button type="button" className="stand-turn" onClick={() => flip(v.id)} aria-label={`Otočit poukaz ${formatCzk(v.price)}`}>
+                      Otočit
                     </button>
                   </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => chooseVoucher(v.id)}
+                  className={`btn mt-auto w-full ${isSelected ? "btn-main" : "btn-line"}`}
+                >
+                  {isSelected ? "Objednat tento poukaz" : "Vybrat poukaz"}
+                </button>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
+      </div>
+      <p className="shelf-text md:hidden">{lead}</p>
 
+      <div className="mx-auto max-w-screen-2xl px-4 pb-28 md:pb-32">
         {/* Jak to funguje + objednávka */}
-        <div id="poukaz-objednavka" className="mt-16 grid items-start gap-8 scroll-mt-24 lg:grid-cols-[2fr_3fr]">
+        <div id="poukaz-objednavka" className="mt-20 grid items-start gap-8 scroll-mt-24 lg:grid-cols-[2fr_3fr]">
           <div>
             <h2 className="text-3xl">Jak to funguje</h2>
             <ol className="mt-6 space-y-5">
@@ -245,7 +258,7 @@ export function VouchersSection() {
                           type="button"
                           role="radio"
                           aria-checked={active}
-                          onClick={() => setSelectedId(v.id)}
+                          onClick={() => pick(v.id)}
                           className={`group/opt relative flex items-center gap-4 rounded-lg border-2 p-2.5 text-left transition-colors sm:flex-col sm:items-stretch sm:gap-0 ${
                             active
                               ? "border-teal bg-turquoise/15"

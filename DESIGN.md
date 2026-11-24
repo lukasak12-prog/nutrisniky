@@ -11,7 +11,10 @@ Jemné odstranění šablonového vzhledu. Stavba stránky, texty, fotky a přib
 Tyrkysový zvýrazňovač. Označuje jen údaje, na kterých záleží, v záznamu stravy. Nikde jinde tyrkysový text v odstavci.
 
 ## Úvod
-Skutečná fotka přes celou šířku bez ztmavení. Titul je „namalovaný“ na zdi: násobí se s omítkou, Nicola sedí před ním. Nic se nevyřezává. `uvod-maska.webp` nepustí barvu na obličej, tričko a vnitřek vlasů, přes okraje vlasů se násobit smí (na tmavém to není vidět), proto nevzniká lem. Fotka a maska musí mít stejný výřez a stejné `object-position` / `mask-position`. Po načtení se nápis klidně objeví zleva doprava. Pod ním jen jméno, místo a dvě tlačítka. Telefon má vlastní výřez na výšku (`uvod-mobil-*`, `uvod-maska-mobil.webp`): nápis přes celou šířku nad hlavou, spodek druhého řádku zajede za temeno. Používá se výřez původní fotky, ne verze rozšířená do šířky.
+Skutečná fotka přes celou šířku bez ztmavení. Titul je „namalovaný“ na zdi: násobí se s omítkou, Nicola sedí před ním. Nic se nevyřezává. `uvod-maska.webp` nepustí barvu na obličej, tričko a vnitřek vlasů, přes okraje vlasů se násobit smí (na tmavém to není vidět), proto nevzniká lem. Fotka a maska musí mít stejný výřez a stejné `object-position` / `mask-position`. Fotka se zarovnává nahoru a není vyšší než 57 % šířky, aby zdola netrčela víčka lahví. Po načtení se nápis klidně objeví zleva doprava. Pod ním jen jméno, místo a dvě tlačítka. Telefon má vlastní výřez na výšku (`uvod-mobil-*`, `uvod-maska-mobil.webp`): nápis přes celou šířku nad hlavou, spodek druhého řádku zajede za temeno. Používá se výřez původní fotky, ne verze rozšířená do šířky.
+
+## Poukazy
+`/poukazy` má velký nápis „Darujte péči o zdraví“ na béžové z poukazu (`--sand`, stejná jako kruh na poukazech). Fotka zdi tu být nemá. Na počítači je nápis na jednom řádku přesně přes šířku tří poukazů a nic ho nezakrývá. Na mobilu má tři řádky a poukazy zakryjí jen spodek posledního. Světlá plocha pod béžovou je stůl, na ní je u každého poukazu obsah, cena a výběr. Vybraný stojí o kousek vpředu. Na mobilu stojí poukazy za sebou a vybraný se vytáhne a postaví dopředu.
 
 ## Písmo
 Commissioner (variabilní, soubory v `src/assets/fonts`, licence OFL). Nadpisy s osou FLAR 100 (rozšířené dříky), text bez ní. Prostrkání nadpisů -0,015em. Základ 17 px. Ceny a časy `tabular-nums`.
@@ -32,6 +35,9 @@ Commissioner (variabilní, soubory v `src/assets/fonts`, licence OFL). Nadpisy s
 
 Tyrkysová `0.76` se nepoužívá na text, na krémové má malý kontrast.
 
+## Hlavička
+Výška se při posunu nemění (`--head`), jen se ukáže linka.
+
 ## Míry
 - Zaoblení: 0,5 rem (plochy, pole, tlačítka) a kruh (ukazatele, dny, portrét). Nic jiného.
 - Stín: žádný na kartách a tlačítkách. Jen obrázky poukazů jako předměty.
@@ -47,6 +53,7 @@ Hýbe se jen to, co něco ukazuje, a nejvýš jednou:
 - přechod z úvodu: úvod stojí, lehce ustoupí a ztmavne, další sekce přes něj čistě přejede; linky nad tématy se dotáhnou zleva
 - zvýrazňovač v záznamu stravy jede po řádcích, zpod listu vyjedou další dva
 - vějíř poukazů se po najetí rozevře (na dotyku, když je vidět)
+- poukazy na mobilu: vybraný se vytáhne zezadu a postaví dopředu
 - poukaz na /poukazy se po najetí pootočí, protože má i druhou stranu
 - linka pod odkazem v menu, otevření menu na mobilu, potvrzení zprávy
 

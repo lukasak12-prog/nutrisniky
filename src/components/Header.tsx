@@ -15,7 +15,7 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
+    const onScroll = () => setScrolled(window.scrollY > 4);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -23,9 +23,9 @@ export function Header() {
 
   return (
     <header style={{ viewTransitionName: "hlavicka" }} className={`fixed inset-x-0 top-0 z-30 border-b bg-background ${scrolled ? "border-border" : "border-transparent"}`}>
-      <div className={`mx-auto flex max-w-screen-2xl items-center justify-between px-4 lg-cols ${scrolled ? "py-2" : "py-4"}`}>
+      <div className="mx-auto flex max-w-screen-2xl items-center justify-between px-4 py-3 lg-cols">
         <a href="/">
-          <img src={logoImg} alt="Nutrisniky" className={`w-auto rounded-lg ${scrolled ? "h-8 md:h-12" : "h-10 md:h-16"}`} />
+          <img src={logoImg} alt="Nutrisniky" className="h-10 w-auto rounded-lg min-[900px]:h-14" />
         </a>
 
         <nav className="hidden items-center justify-between gap-3 lg:flex xl:justify-start xl:gap-7">

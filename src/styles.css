@@ -165,6 +165,16 @@
     font-size: clamp(2.1rem, 1.5rem + 2.3vw, 3.6rem);
   }
 
+  /* výška hlavičky, při posunu se nemění */
+  :root {
+    --head: calc(4.25rem + 1px);
+  }
+  @media (min-width: 900px) {
+    :root {
+      --head: calc(5rem + 1px);
+    }
+  }
+
   /* sloupce hlavičky */
   @media (min-width: 1024px) {
     .lg-cols {
@@ -178,25 +188,26 @@
   .hero {
     position: relative;
     isolation: isolate;
-    padding-top: 4.5rem;
+    padding-top: var(--head);
     background: var(--background);
-    --photo: min(112vw, 58svh);
+    /* spodek fotky se nikdy neukáže: od 57 % šířky níž začínají víčka lahví */
+    --photo: min(57vw, 58svh);
   }
   .hero img {
     display: block;
     width: 100%;
     height: var(--photo);
     object-fit: cover;
-    object-position: 32% 50%;
+    object-position: 32% 0;
   }
   .hero h1 {
     position: absolute;
     z-index: 1;
-    inset: 4.5rem 0 auto;
+    inset: var(--head) 0 auto;
     height: var(--photo);
     color: oklch(0.53 0.095 197);
     mix-blend-mode: multiply;
-    mask: var(--maska) 32% 50% / cover no-repeat;
+    mask: var(--maska) 32% 0 / cover no-repeat;
     font-weight: 750;
     letter-spacing: -0.025em;
     font-size: min(13.4vw, 9svh);
@@ -232,7 +243,7 @@
   /* telefon: nápis přes celou šířku, spodek druhého řádku zajede za temeno */
   @media (max-width: 599px) {
     .hero {
-      --photo: min(134vw, 100svh - 4.5rem - 10.6rem);
+      --photo: min(134vw, 100svh - var(--head) - 10.6rem);
       --fs: 22.3vw;
     }
     .hero img {
@@ -266,16 +277,16 @@
   }
   @media (min-width: 900px) {
     .hero {
-      padding-top: 6rem;
-      --photo: max(100svh - 6rem, 30rem);
+      padding-top: var(--head);
+      --photo: min(max(100svh - var(--head), 30rem), 57vw);
       --fs: min(12.1vw, 25svh);
     }
     .hero img {
-      object-position: 50% 12%;
+      object-position: 50% 0;
     }
     .hero h1 {
-      inset: 6rem 0 auto;
-      mask-position: 50% 12%;
+      inset: var(--head) 0 auto;
+      mask-position: 50% 0;
       font-size: var(--fs);
     }
     .hero h1 span:first-child {
@@ -293,7 +304,7 @@
       z-index: 3;
       left: 51.5%;
       right: 1rem;
-      top: calc(6rem + clamp(0.2rem, 4svh, 4rem) + var(--fs) * 2.28);
+      top: calc(var(--head) + clamp(0.2rem, 4svh, 4rem) + var(--fs) * 2.28);
       padding: 0;
       gap: clamp(0.9rem, 2.6svh, 2.2rem);
     }
@@ -320,15 +331,9 @@
     pointer-events: none;
   }
   @media (min-height: 36rem) {
-    /* záporný posun: po zmenšení hlavičky zůstane fotka hned pod ní */
     .slide > .hero {
       position: sticky;
-      top: -0.7rem;
-    }
-  }
-  @media (min-width: 900px) and (min-height: 36rem) {
-    .slide > .hero {
-      top: -1.9rem;
+      top: 0;
     }
   }
   .help {
@@ -600,6 +605,221 @@
     }
     [data-in]:not(.in) .fixa {
       background-size: 0 100%;
+    }
+  }
+
+  /* ---------- /poukazy: velký nápis, před ním stojí opřené poukazy ---------- */
+  .shelf {
+    container-type: inline-size;
+    background: var(--secondary);
+  }
+  .shelf > * {
+    /* šířka obsahu, šířka a výška jednoho poukazu */
+    --obsah: calc(min(100cqw, 96rem) - 2rem);
+    --sirka: var(--obsah);
+    --vyska: calc(var(--sirka) * 748 / 1588);
+    --vykuk: calc(var(--vyska) * 0.44);
+    --fs: calc(var(--obsah) * 0.245);
+  }
+  .wall {
+    position: relative;
+    background: var(--sand);
+    padding-top: calc(var(--head) + var(--fs) * 0.08);
+    padding-bottom: calc(var(--vyska) + var(--vykuk) * 1.8 - 0.9rem + var(--fs) * 0.03);
+    overflow: hidden;
+  }
+  .wall h1 {
+    position: relative;
+    z-index: 1;
+    width: var(--obsah);
+    margin-inline: auto;
+    color: oklch(0.42 0.075 197);
+    font-weight: 750;
+    letter-spacing: -0.025em;
+    font-size: var(--fs);
+    line-height: 0.86;
+    white-space: nowrap;
+  }
+  .wall h1 span {
+    display: block;
+    padding: 0.08em 0.06em 0.14em 0;
+    margin-bottom: -0.22em;
+  }
+  .stand {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    width: var(--obsah);
+    margin-inline: auto;
+    margin-top: calc(var(--vyska) * -1 + 0.9rem);
+  }
+  .stand-item {
+    grid-area: 1 / 1;
+    --d: 0;
+    z-index: calc(3 - var(--d));
+  }
+  .stand-card {
+    position: relative;
+    width: var(--sirka);
+    transform-origin: 50% 100%;
+    translate: 0 calc(var(--d) * var(--vykuk) * -1);
+    scale: calc(1 - var(--d) * 0.035);
+    transition: translate 0.45s var(--ease-in-out) 0.2s, scale 0.45s var(--ease-in-out) 0.2s;
+  }
+  .stand-card button {
+    perspective-origin: 50% 0;
+  }
+  /* poukaz se opírá o zeď: nahoře blízko, dole dál, proto se stín dolů rozšiřuje */
+  .stand-card::before {
+    content: "";
+    position: absolute;
+    inset: 3% -0.5% 0 1%;
+    border-radius: var(--radius);
+    background: oklch(0.32 0.04 55 / 0.5);
+    transform: skewX(-4deg);
+    transform-origin: 50% 0;
+    filter: blur(0.7rem);
+    mix-blend-mode: multiply;
+  }
+  .stand-card::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: auto 0.5% -0.3rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: oklch(0.3 0.04 55 / 0.5);
+    filter: blur(0.25rem);
+  }
+  .stand .flip-card {
+    transform: rotateX(6deg);
+    transform-origin: 50% 100%;
+  }
+  .stand .flip-card.is-flipped {
+    transform: rotateX(6deg) rotateY(180deg);
+  }
+  .stand-pick {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+  }
+  .stand-info {
+    padding-top: 1.75rem;
+  }
+  .stand-turn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2rem;
+    font-size: 0.9375rem;
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+    cursor: pointer;
+  }
+  .stand-turn:hover {
+    color: var(--teal);
+  }
+  .shelf-text {
+    width: var(--obsah);
+    margin: 2rem auto 0;
+    color: var(--muted-foreground);
+  }
+  @media (max-width: 767px) {
+    .stand-item:not(.is-selected) .stand-info {
+      display: none;
+    }
+    /* vybraný se vytáhne nahoru a postaví se dopředu */
+    .stand-item.is-picked {
+      animation: vpredu 0.75s var(--ease-in-out);
+    }
+    .stand-item.is-picked .stand-card {
+      transition: none;
+      animation: vytahnout 0.75s var(--ease-in-out);
+    }
+  }
+  @keyframes vpredu {
+    from, 45% {
+      z-index: calc(3 - var(--z));
+    }
+    46% {
+      z-index: 3;
+    }
+  }
+  @keyframes vytahnout {
+    from {
+      translate: 0 calc(var(--z) * var(--vykuk) * -1);
+      scale: calc(1 - var(--z) * 0.035);
+    }
+    45% {
+      translate: 0 calc(var(--z) * var(--vykuk) * -1 - var(--vyska) * 0.62);
+    }
+  }
+  @media (min-width: 768px) {
+    .shelf > * {
+      --sirka: calc((var(--obsah) - 2 * var(--mezera)) / 3);
+      --mezera: calc(var(--obsah) * 0.022);
+      --fs: calc(var(--obsah) * 0.1112);
+    }
+    .wall {
+      padding-top: calc(var(--head) + clamp(1.5rem, 5svh, 4.5rem));
+      padding-bottom: calc(var(--vyska) + clamp(1.8rem, 4.5svh, 4rem));
+    }
+    /* jeden řádek přesně přes šířku tří poukazů */
+    .wall h1 {
+      line-height: 1;
+      text-indent: -0.035em;
+    }
+    .wall h1 span {
+      text-indent: 0;
+    }
+    .wall h1 span {
+      display: inline-block;
+      padding: 0 0.04em 0.12em 0;
+      margin: 0 -0.04em -0.12em 0;
+    }
+    .wall .shelf-text {
+      margin-top: clamp(1rem, 2.6svh, 2.2rem);
+      color: var(--foreground);
+      font-size: clamp(1.05rem, 1.35cqw, 1.5rem);
+    }
+    .stand {
+      grid-template-columns: repeat(3, 1fr);
+      column-gap: var(--mezera);
+    }
+    .stand-item {
+      grid-area: auto;
+      display: flex;
+      flex-direction: column;
+      z-index: auto;
+    }
+    .stand-card {
+      translate: none;
+      scale: none;
+      transition: translate 0.45s var(--ease-out), scale 0.45s var(--ease-out);
+    }
+    /* vybraný stojí o kousek vpředu */
+    .is-selected .stand-card {
+      translate: 0 0.55rem;
+      scale: 1.035;
+    }
+    .stand-pick {
+      display: none;
+    }
+    .stand-info {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .wall h1 span {
+      animation: napsat 0.9s var(--ease-in-out) 0.1s both;
+    }
+    .wall h1 span:nth-child(2) {
+      animation-delay: 0.25s;
+    }
+    .wall h1 span:last-child {
+      animation-delay: 0.45s;
     }
   }
 

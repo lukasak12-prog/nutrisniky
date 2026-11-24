@@ -11,9 +11,7 @@ export default function VouchersPage() {
 
   return (
     <Layout>
-      <div className="pt-16 md:pt-20">
-        <VouchersSection />
-      </div>
+      <VouchersSection />
     </Layout>
   );
 }

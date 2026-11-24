@@ -12,7 +12,9 @@ export function SlideOver({ children }: { children: React.ReactNode }) {
     const draw = () => {
       raf = 0;
       const vh = window.innerHeight;
-      const p = Math.min(Math.max((vh - next.getBoundingClientRect().top) / vh, 0), 1);
+      const top = next.getBoundingClientRect().top;
+      // na začátku stránky vždy 0, i když další sekce vykukuje už před posunem
+      const p = Math.min(Math.max(1 - top / Math.min(top + window.scrollY, vh), 0), 1);
       el.style.setProperty("--p", p.toFixed(3));
     };
     const onScroll = () => {
